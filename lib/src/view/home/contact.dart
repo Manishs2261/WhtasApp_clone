@@ -24,58 +24,48 @@ class _ContectState extends State<Contect> {
         actions: [
 
           Icon(Icons.search_outlined,size: 30,color: Colors.white,),
-          Icon(Icons.more_vert,size: 30,color: Colors.white,),
-          SizedBox(width:15 ),
+         PopupMenuButton(
+           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+             itemBuilder:(BuildContext context){
+           return [
+             PopupMenuItem(child: Text("Invite a friend"),value: "Invite a friend",),
+             PopupMenuItem(child: Text("Contacts"),value: "Contects",),
+             PopupMenuItem(child: Text("Refresh"),value: "Refresh",),
+             PopupMenuItem(child: Text("Help"),value: "Help",),
+           ];
+         })
         ],
         
 
       ),
       
-      body:   Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.cyan,
-              child: Icon(Icons.people_alt_outlined,color: Colors.white,),
-            ),
-            title: Text("New group"),),
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.cyan,
-              child: Icon(Icons.people_alt_outlined,color: Colors.white,),
-            ),
-            trailing: Icon(Icons.qr_code),
-            title: Text("New contact"),),
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.cyan,
-              child: Icon(Icons.people_alt_outlined,color: Colors.white,),
-            ),
-            title: Text("New community"),),
-
-          Padding(
-            padding: const EdgeInsets.only(left: 20,top: 10),
-            child: Text("Contacts on WhatsApp",style: TextStyle(
-                color: Colors.grey,fontSize: 14,fontWeight: FontWeight.w700
-            ),),
-          ),
-          Expanded(
-            child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: 25,
-                itemBuilder: (BuildContext context, int index){
-                  return ListTile(
-                    leading: CircleAvatar(),
-                    subtitle: Text("tag line "),
-                    title: Text("mansih"),
+      body:   ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: 25,
+          itemBuilder: (BuildContext context, int index){
+            if(index == 0)
+              {
+                return ListTile(title: Text("New group"),leading: CircleAvatar(child: Icon(Icons.group),),);
+              }
+            else if(index == 1){
+              return ListTile(title: Text("New contect"),leading: CircleAvatar(child: Icon(Icons.person_add),),trailing: Icon(Icons.qr_code),);
+            }else if( index == 2)
+              {
+                return ListTile(title: Text("New community"),leading: CircleAvatar(child: Icon(Icons.group),),);
+              }else if(index == 3)
+                {
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 20,top: 10,bottom: 10),
+                    child: Text("Contacts on WhatsApp",style: TextStyle(color: Colors.grey),),
                   );
-                }),
-          )
-
-        ],
-      ),
+                }
+            return ListTile(
+              leading: CircleAvatar(),
+              subtitle: Text("tag line "),
+              title: Text("mansih"),
+            );
+          }),
       );
 
   }
