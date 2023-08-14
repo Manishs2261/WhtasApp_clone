@@ -55,7 +55,27 @@ class _PersonChatPageState extends State<PersonChatPage> {
         width: MediaQuery.of(context).size.width,
         child:Stack(
           children: [
-            ListView(),
+
+            Container(
+              height: MediaQuery.of(context).size.height - 140,
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  OwnMessageCard(),
+                  ReplyCard(),
+                  OwnMessageCard(),
+                  ReplyCard(),
+                  OwnMessageCard(),
+                  ReplyCard(),
+                  OwnMessageCard(),
+                  ReplyCard(),
+                  OwnMessageCard(),
+                  ReplyCard(),
+                  OwnMessageCard(),
+                  ReplyCard(),
+                ],
+              ),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
 
@@ -72,6 +92,8 @@ class _PersonChatPageState extends State<PersonChatPage> {
                         maxLines: 100,
                         minLines: 1,
                         decoration: InputDecoration(
+
+                          border: InputBorder.none,
                           suffixIcon: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -106,6 +128,88 @@ class _PersonChatPageState extends State<PersonChatPage> {
         ),
       ),
 
+    );
+  }
+}
+
+
+class OwnMessageCard extends StatelessWidget {
+  const OwnMessageCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width - 45,
+          ),
+        child: Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color: Colors.yellow,
+          margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10,right: 80,top: 5,bottom: 20),
+                child: Text("Hey jsdhfs djfksf dfkdsjf dsfjgdkg dj sfdjksd gjkdlfj dkfjld gdkfj d",style: TextStyle(fontSize: 16),),
+              ),
+              Positioned(
+                right: 4,
+                bottom: 4,
+                child: Row(
+                  children: [
+                    Text("23:21",style: TextStyle(fontSize: 13,color: Colors.grey),),
+                    Icon(Icons.done_all_outlined,size: 20,),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+
+      ),
+    );
+  }
+}
+
+class ReplyCard extends StatelessWidget {
+  const ReplyCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 45,
+        ),
+        child: Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color: Colors.greenAccent,
+          margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10,right: 80,top: 5,bottom: 20),
+                child: Text("Hey ",style: TextStyle(fontSize: 16),),
+              ),
+              Positioned(
+                right: 4,
+                bottom: 4,
+                child: Text("23:21",style: TextStyle(fontSize: 13,color: Colors.grey),),
+
+
+
+              )
+            ],
+          ),
+        ),
+
+      ),
     );
   }
 }
