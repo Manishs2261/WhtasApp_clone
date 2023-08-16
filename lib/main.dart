@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: //ProfilePage()
-        HomeScreen(),
+      home: ProfilePage()
+        //HomeScreen(),
     );
   }
 }
