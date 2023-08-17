@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatsappclone/src/view/home/Settings.dart';
 import 'package:whatsappclone/src/view/home/person_chat_page.dart';
 
 import 'contact.dart';
@@ -12,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  List<String>title = <String>['Chats', 'Status', 'Calls'];
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,40 +24,49 @@ class _HomeScreenState extends State<HomeScreen> {
         length: tabCount,
         child: Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
           //  backgroundColor: Colors.green,
             title: Text("WhatsApp", style: TextStyle(fontSize: 22, color: Colors.white,letterSpacing: 1),),
             elevation: 1,
             actions: [
               IconButton(onPressed: (){},icon:Icon(Icons.camera_alt_outlined,color: Colors.white,),),
               IconButton(onPressed: (){},icon:Icon(Icons.search_outlined,color: Colors.white,),),
-
-
               PopupMenuButton<String>(
                 color: Colors.white,
               shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20)),
                   onSelected: (value){
+
+                  if(value == 5){
+                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SettingssPage()));
+                  }else
+                    {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SettingssPage()));
+                    }
+
                   print(value);
                   },
                   itemBuilder: (BuildContext context){
 
                 return [
                   PopupMenuItem(child: Text("New group"),
-                    value: "New group",
+                    value: "0",
                   ),
                   PopupMenuItem(child: Text("New broadcst"),
-                    value: "New broadcst",
+                    value: "1",
                   ),
                   PopupMenuItem(child: Text("Linked devices"),
-                    value: "Linked devices",
+                    value: "2",
                   ),
                   PopupMenuItem(child: Text("Starred messages"),
-                    value: "Starred messages",
+                    value: "3",
                   ),
                   PopupMenuItem(child: Text("Payments"),
-                    value: "Payments",
+
+                    value: "4",
                   ),
                   PopupMenuItem(child: Text("Settings"),
-                    value: "Settings",
+                    value: "5",
+
                   ),
                 ];
               })
@@ -197,6 +207,7 @@ class CallsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xff01937c),
         onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => Contect()));
         },
@@ -212,7 +223,7 @@ class CallsPage extends StatelessWidget {
                 return ListTile(
                   title: Text("Create call link",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
                   subtitle: Text("Share a link your WhatsApp call"),
-                  leading: CircleAvatar(radius: 25,child: Icon(Icons.link),),
+                  leading: CircleAvatar(radius: 25,child: Icon(Icons.link),backgroundColor: Colors.red[100],),
 
                 );
 
@@ -234,7 +245,7 @@ class CallsPage extends StatelessWidget {
                           Text("Yesterday 3:04 pm"),
                         ],
                       ),
-                      leading: CircleAvatar(radius: 25,child: Icon(Icons.link),),
+                      leading: CircleAvatar(radius: 25,child: Icon(Icons.link),backgroundColor: Colors.blue[50]),
                       trailing: Icon(Icons.call,color: Colors.green,),
 
                     );
@@ -271,6 +282,7 @@ class StatusPage extends StatelessWidget {
           SizedBox(height: 30,),
           FloatingActionButton(
             onPressed: (){},
+            backgroundColor: Color(0xff01937c),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(15, 15))),
             child: Icon(Icons.camera_alt,),
           ),
@@ -291,19 +303,20 @@ class StatusPage extends StatelessWidget {
                       Container(
                         height: 50,
                         width: 50,
-
+                        child: Icon(Icons.person,size: 30,),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(100),
-                          color: Colors.red,
+                          color: Colors.red[100],
                           border: Border.all(color: Colors.green,width: 3)
                         ),
                       ),
                       Positioned(
-                        top: 22,
-                        left: 22,
+                        top: 28,
+                        left: 28,
                         child: Container(
-
-                          child: Icon(Icons.add,color: Colors.white,),
+                               height: 23,
+                          width: 23,
+                          child: Icon(Icons.add,size: 20,color: Colors.white,),
                           decoration: BoxDecoration(
                             color: Colors.green,
                             border:  Border.all(color: Colors.white, width: 2),
@@ -334,10 +347,10 @@ class StatusPage extends StatelessWidget {
                       leading:    Container(
                         height: 50,
                         width: 50,
-
+                        child: Icon(Icons.person),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
-                            color: Colors.red,
+                            color: Colors.blue[50],
                             border: Border.all(color: Colors.green,width: 3)
                         ),
                       ),
@@ -357,10 +370,11 @@ class StatusPage extends StatelessWidget {
                           leading:    Container(
                             height: 50,
                             width: 50,
-
+                             child: Icon(Icons.person),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
-                                color: Colors.red,
+                                color: Colors.blue[50],
+
                                 border: Border.all(color: Colors.green,width: 3)
                             ),
                           ),
@@ -369,14 +383,7 @@ class StatusPage extends StatelessWidget {
 
                         );
 
-                      }
-
-
-
-
-
-
-             ;
+                      };
           }),
     );
   }
@@ -395,6 +402,7 @@ class ChatsPage extends StatelessWidget {
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Contect()));
         },
         child: Icon(Icons.message),
+        backgroundColor: Color(0xff01937c),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(15, 15))),
       ),
       body: ListView.builder(
@@ -407,7 +415,7 @@ class ChatsPage extends StatelessWidget {
                             Navigator.of(context).push(MaterialPageRoute(builder: (context)=> PersonChatPage()));
                             },
 
-                            leading: CircleAvatar(radius: 25,
+                            leading: CircleAvatar(radius: 25,backgroundColor: Colors.blue[50],
                             child: Icon(Icons.person_outline,size: 30,),),
                             title: Text("Manish SAhu",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                             subtitle: Row(

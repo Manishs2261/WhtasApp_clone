@@ -2,6 +2,9 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:whatsappclone/src/view/home/profile.dart';
+
+import 'Home.dart';
 
 class PersonChatPage extends StatefulWidget {
   const PersonChatPage({super.key});
@@ -16,21 +19,31 @@ class _PersonChatPageState extends State<PersonChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.greenAccent,
 
+       automaticallyImplyLeading: false,
 
-        title:Row(
-          children: [
-            CircleAvatar(child: Icon(Icons.person_outline),),
-            SizedBox(width: 10,),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        title:InkWell(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder:(context)=> ProfilePage(),maintainState: false));
+          },
+          child: Row(
             children: [
-              Text("Manish"),
-              Text("last seen today at 12.22",style: TextStyle(fontSize: 10),)
+               InkWell(child: Icon(Icons.arrow_back),onTap: (){
+                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                 },),
+              SizedBox(width: 5,),
+              CircleAvatar(child: Icon(Icons.person_outline),),
+              SizedBox(width: 10,),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Manish"),
+                SizedBox(height: 2,),
+                Text("Online",style: TextStyle(fontSize: 12,color: Colors.white70),)
+              ],
+            )
             ],
-          )
-          ],
+          ),
         ),
 
         actions: [
@@ -85,8 +98,9 @@ class _PersonChatPageState extends State<PersonChatPage> {
              child: Row(
                     children: [
                       Container(
-                        width: MediaQuery.of(context).size.width -55,
+                        width: MediaQuery.of(context).size.width -60,
                         child: Card(
+                          elevation: 10,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                           margin: EdgeInsets.only(left: 2,right: 2,bottom: 8),
                           child: TextFormField(
@@ -97,6 +111,7 @@ class _PersonChatPageState extends State<PersonChatPage> {
                             decoration: InputDecoration(
 
                               border: InputBorder.none,
+
                               suffixIcon: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -124,10 +139,11 @@ class _PersonChatPageState extends State<PersonChatPage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 2,right: 2,bottom: 8),
+                        padding: const EdgeInsets.only(left: 2,right: 3,bottom: 8),
                         child: CircleAvatar(
+                          backgroundColor: Color(0xff01937c),
                           radius: 25,
-                          child: Icon(Icons.send),),
+                          child: Icon(Icons.send,color: Colors.white,),),
                       )
                     ],
                   ),
@@ -232,21 +248,21 @@ class OwnMessageCard extends StatelessWidget {
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          color: Colors.yellow,
+          color: Color(0xffd5ffd0),
           margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
           child: Stack(
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 10,right: 80,top: 5,bottom: 20),
-                child: Text("Hey jsdhfs djfksf dfkdsjf dsfjgdkg dj sfdjksd gjkdlfj dkfjld gdkfj d",style: TextStyle(fontSize: 16),),
+                child: Text("Hey i am using WhatsApp",style: TextStyle(fontSize: 16),),
               ),
               Positioned(
                 right: 4,
                 bottom: 4,
                 child: Row(
                   children: [
-                    Text("23:21",style: TextStyle(fontSize: 13,color: Colors.grey),),
-                    Icon(Icons.done_all_outlined,size: 20,),
+                    Text("23:21 pm",style: TextStyle(fontSize: 12,color: Colors.grey),),
+                    Icon(Icons.done_all_outlined,size: 15,color: Colors.blue,),
                   ],
                 ),
               )
@@ -274,18 +290,18 @@ class ReplyCard extends StatelessWidget {
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          color: Colors.greenAccent,
+          color: Color(0xfff3fde8),
           margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
           child: Stack(
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 10,right: 80,top: 5,bottom: 20),
-                child: Text("Hey ",style: TextStyle(fontSize: 16),),
+                child: Text("Hey",style: TextStyle(fontSize: 16),),
               ),
               Positioned(
                 right: 4,
                 bottom: 4,
-                child: Text("23:21",style: TextStyle(fontSize: 13,color: Colors.grey),),
+                child: Text("23:21 pm",style: TextStyle(fontSize: 12,color: Colors.grey),),
 
 
 
