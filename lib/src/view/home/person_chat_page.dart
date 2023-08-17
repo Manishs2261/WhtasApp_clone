@@ -1,5 +1,7 @@
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:flutter/foundation.dart' as foundation;
 
 class PersonChatPage extends StatefulWidget {
   const PersonChatPage({super.key});
@@ -80,50 +82,56 @@ class _PersonChatPageState extends State<PersonChatPage> {
             ),
             Align(
               alignment: Alignment.bottomCenter,
+             child: Row(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width -55,
+                        child: Card(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                          margin: EdgeInsets.only(left: 2,right: 2,bottom: 8),
+                          child: TextFormField(
+                            textAlignVertical: TextAlignVertical.center,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 100,
+                            minLines: 1,
+                            decoration: InputDecoration(
 
-              child:   Row(
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width -55,
-                    child: Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                      margin: EdgeInsets.only(left: 2,right: 2,bottom: 8),
-                      child: TextFormField(
-                        textAlignVertical: TextAlignVertical.center,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 100,
-                        minLines: 1,
-                        decoration: InputDecoration(
+                              border: InputBorder.none,
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
 
-                          border: InputBorder.none,
-                          suffixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
+                                InkWell(
+                                  onTap: (){
+                                    showModalBottomSheet(
+                                      backgroundColor: Colors.transparent,
+                                        context: context, builder: (builder)=> bottomSheet());
+                                  },
+                                    child: Icon(Icons.attach_file)),
+                                  SizedBox(width:10,),
+                                   Icon(Icons.currency_rupee_outlined),
+                                  SizedBox(width:10,),
+                                  Icon(Icons.camera_alt_outlined),
+                                  SizedBox(width:10,)
+                                ],
+                              ),
+                              hintText: "Type a Message",
+                              contentPadding: EdgeInsets.all(8),
+                              prefixIcon: IconButton(icon: Icon(Icons.emoji_emotions_outlined),onPressed: (){},)
+                            ),
 
-                            Icon(Icons.attach_file),
-                              SizedBox(width:10,),
-                               Icon(Icons.currency_rupee_outlined),
-                              SizedBox(width:10,),
-                              Icon(Icons.camera_alt_outlined),
-                              SizedBox(width:10,)
-                            ],
                           ),
-                          hintText: "Type a Message",
-                          contentPadding: EdgeInsets.all(8),
-                          prefixIcon: IconButton(icon: Icon(Icons.emoji_emotions_outlined),onPressed: (){},)
                         ),
-
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 2,right: 2,bottom: 8),
+                        child: CircleAvatar(
+                          radius: 25,
+                          child: Icon(Icons.send),),
+                      )
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 2,right: 2,bottom: 8),
-                    child: CircleAvatar(
-                      radius: 25,
-                      child: Icon(Icons.send),),
-                  )
-                ],
-              ),
+
             ),
 
           ],
@@ -132,6 +140,81 @@ class _PersonChatPageState extends State<PersonChatPage> {
 
     );
   }
+
+  //===========bottom sheet ====================
+Widget bottomSheet(){
+    return Container(
+
+      height: 360,
+      width: MediaQuery.of(context).size.width - 10,
+      child: Card(
+          margin: EdgeInsets.all(18),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  buttomSheetIcon(Icons.insert_drive_file,Colors.indigo,"Document"),
+                  SizedBox(width: 40,),
+                  buttomSheetIcon(Icons.camera_alt,Colors.pink,"Camera"),
+                  SizedBox(width: 40,),
+                  buttomSheetIcon(Icons.photo,Colors.purpleAccent,"Gallery"),
+                ],
+              ),
+              SizedBox(height: 15,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  buttomSheetIcon(Icons.audio_file,Colors.orangeAccent,"Audio"),
+                  SizedBox(width: 40,),
+                  buttomSheetIcon(Icons.location_on,Colors.green,"Location"),
+                  SizedBox(width: 40,),
+                  buttomSheetIcon(Icons.currency_rupee_outlined,Colors.lightGreen,"Payment"),
+                ],
+              ),
+              SizedBox(height: 15,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  buttomSheetIcon(Icons.person,Colors.blueAccent,"Contact"),
+                  SizedBox(width: 40,),
+                  buttomSheetIcon(Icons.poll_outlined,Colors.grey,"Poll"),
+
+                ],
+              ),
+
+            ],
+          ),
+        ),
+
+      ),
+    );
+}
+
+Widget buttomSheetIcon(IconData icon,Color color,String text){
+    return InkWell(
+      onTap: (){},
+      child: Column(
+        children: [
+          CircleAvatar(
+            backgroundColor: color,
+            radius: 30,
+            child: Icon(icon,size: 29,color: Colors.white,),
+          ),
+          SizedBox(height: 5,),
+          Text(text,style: TextStyle(fontSize: 12),)
+        ],
+      ),
+    );
+}
+
+//======================================
+
 }
 
 
