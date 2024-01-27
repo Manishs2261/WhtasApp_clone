@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:whatsappclone/src/view/home/profile.dart';
+import 'package:whatsappclone/src/features/profile/profile.dart';
 
-import 'Home.dart';
+import '../home/Home.dart';
 
 class PersonChatPage extends StatefulWidget {
   const PersonChatPage({super.key});
@@ -33,7 +33,7 @@ class _PersonChatPageState extends State<PersonChatPage> {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const HomeScreen()));
+                          builder: (context) =>  HomeScreen()));
                 },
               ),
               const SizedBox(

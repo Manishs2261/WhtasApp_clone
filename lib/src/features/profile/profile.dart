@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsappclone/src/view/home/person_chat_page.dart';
+import 'package:whatsappclone/src/features/charts/person_chat_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

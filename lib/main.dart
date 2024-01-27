@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whatsappclone/src/view/home/Home.dart';
+import 'package:whatsappclone/src/features/home/Home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
       ),
       home: // ProfilePage()
-          const HomeScreen(),
+           HomeScreen(),
     );
   }
 }
