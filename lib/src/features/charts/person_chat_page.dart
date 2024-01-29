@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:whatsappclone/src/core/model/chat_user.dart';
 
 import 'package:whatsappclone/src/features/profile/profile.dart';
 
 import '../home/Home.dart';
 
-class PersonChatPage extends StatefulWidget {
-  const PersonChatPage({super.key});
+class PersonChatPage extends StatelessWidget {
+  const PersonChatPage({super.key, required this.user,});
 
-  @override
-  State<PersonChatPage> createState() => _PersonChatPageState();
-}
+  final ChatUser user ;
 
-class _PersonChatPageState extends State<PersonChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +20,7 @@ class _PersonChatPageState extends State<PersonChatPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
+                    builder: (context) =>  ProfilePage(user: user,),
                     maintainState: false));
           },
           child: Row(
@@ -204,7 +202,7 @@ class _PersonChatPageState extends State<PersonChatPage> {
   Widget bottomSheet() {
     return SizedBox(
       height: 360,
-      width: MediaQuery.of(context).size.width - 10,
+     // width: MediaQuery.of(context).size.width - 10,
       child: Card(
         margin: const EdgeInsets.all(18),
         child: Padding(
@@ -290,8 +288,6 @@ class _PersonChatPageState extends State<PersonChatPage> {
       ),
     );
   }
-
-//======================================
 }
 
 class OwnMessageCard extends StatelessWidget {

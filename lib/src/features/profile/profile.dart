@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:whatsappclone/src/core/model/chat_user.dart';
 import 'package:whatsappclone/src/features/charts/person_chat_page.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, required this.user});
+
+  final ChatUser user ;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,7 @@ class ProfilePage extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const PersonChatPage()));
+                                             PersonChatPage(user: user,)));
                               },
                               icon: const Icon(Icons.arrow_back)),
                           CircleAvatar(
@@ -83,8 +86,8 @@ class ProfilePage extends StatelessWidget {
                               })
                         ],
                       ),
-                      const Text(
-                        "Manish sahu",
+                       Text(
+                        "${user.name}",
                         style: TextStyle(fontSize: 30),
                       ),
                       const Text(
