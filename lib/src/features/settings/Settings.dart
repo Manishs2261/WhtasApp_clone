@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatsappclone/src/features/profile/self_profile/self_profile.dart';
 
 class SettingssPage extends StatelessWidget {
   const SettingssPage({super.key});
@@ -17,6 +18,9 @@ class SettingssPage extends StatelessWidget {
         child: Column(
           children: [
             ListTile(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> SelfProfile()));
+              },
               leading: CircleAvatar(
                 radius: 25,
                 backgroundColor: Colors.blue[100],

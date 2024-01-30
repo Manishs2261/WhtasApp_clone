@@ -3,11 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:whatsappclone/src/features/home/widgets/pop_menu_button.dart';
 import 'package:whatsappclone/src/features/home/widgets/tab_widgets.dart';
 
-class SilverAppBarWidgets extends StatelessWidget {
+class SilverAppBarWidgets extends StatefulWidget {
   const SilverAppBarWidgets({
     super.key,
   });
 
+  @override
+  State<SilverAppBarWidgets> createState() => _SilverAppBarWidgetsState();
+}
+
+class _SilverAppBarWidgetsState extends State<SilverAppBarWidgets> {
+
+
+  // for storing search status
+  bool _isSearching = false;
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -25,7 +34,12 @@ class SilverAppBarWidgets extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+
+
+
+
+          },
           icon: const Icon(
             Icons.search_outlined,
             color: Colors.white,

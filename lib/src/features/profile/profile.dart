@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsappclone/src/core/model/chat_user.dart';
@@ -45,16 +46,18 @@ class ProfilePage extends StatelessWidget {
                               },
                               icon: const Icon(Icons.arrow_back)),
                           CircleAvatar(
-                            radius: 65,
-                            backgroundColor: Colors.green,
-                            child: CircleAvatar(
-                              radius: 60,
-                              backgroundColor: Colors.blue[100],
-                              child: const Icon(
-                                Icons.person,
-                                size: 70,
-                              ),
-                            ),
+                            radius: 60,
+                            child:  ClipRRect(
+                              borderRadius: BorderRadius.circular(65),
+
+                              child: CachedNetworkImage(
+                                width: 150,
+                                height: 150,
+                                fit: BoxFit.fill,
+                                imageUrl: user.image,
+                                placeholder: (context, url) => CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => Icon(Icons.person),
+                              ),),
                           ),
                           PopupMenuButton<String>(
                               shape: RoundedRectangleBorder(
@@ -90,8 +93,8 @@ class ProfilePage extends StatelessWidget {
                         "${user.name}",
                         style: TextStyle(fontSize: 30),
                       ),
-                      const Text(
-                        "+91 9023562145",
+                       Text(
+                        "${user.email}",
                         style: TextStyle(color: Colors.grey, fontSize: 18),
                       ),
                       const SizedBox(
@@ -134,14 +137,14 @@ class ProfilePage extends StatelessWidget {
                         blurStyle: BlurStyle.outer)
                   ],
                 ),
-                child: const Padding(
+                child:  Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Success and excuess do not talk together",
+                        "${user.about}",
                         style: TextStyle(fontSize: 18),
                       ),
                       Text(

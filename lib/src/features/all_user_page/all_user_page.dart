@@ -22,11 +22,6 @@ class AllUserPage extends StatelessWidget {
   // for storing searched items
   final List<ChatUser> _searchList = [];
 
-  // for storing search status
-  bool _isSearching = false;
-
-
-
 
 
   @override
@@ -34,13 +29,12 @@ class AllUserPage extends StatelessWidget {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-
             // //sign out function
 
-              await FirebaseAuth.instance.signOut();
-              await GoogleSignIn().signOut();
+            await FirebaseAuth.instance.signOut();
+            await GoogleSignIn().signOut();
 
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
 
             //  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Contect()));
           },
@@ -49,7 +43,7 @@ class AllUserPage extends StatelessWidget {
           child: const Icon(Icons.message),
         ),
         body: StreamBuilder(
-          stream: AppApis.firestore.collection('users').snapshots(),
+          stream: AppApis.getAllUsers(),
           builder: (BuildContext context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -66,28 +60,31 @@ class AllUserPage extends StatelessWidget {
                 final data = snapshot.data?.docs;
                 _list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
 
-                if(_list.isNotEmpty){
+                if (_list.isNotEmpty) {
                   return ListView.builder(
                       padding: EdgeInsets.zero,
                       itemCount: _list.length,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  PersonChatPage
-                              (user: _list[index],)));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => PersonChatPage(
+                                      user: _list[index],
+                                    )));
                           },
                           leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: CachedNetworkImage(
-                                imageUrl: _list[index].image,
-                                placeholder: (context, url) => CircularProgressIndicator(),
-                                errorWidget: (context, url, error) => Icon(Icons.person),
-                              ),),
+                            borderRadius: BorderRadius.circular(50),
+                            child: CachedNetworkImage(
+                              imageUrl: _list[index].image,
+                              placeholder: (context, url) => CircularProgressIndicator(),
+                              errorWidget: (context, url, error) => Icon(Icons.person),
+                            ),
+                          ),
                           title: Text(
                             "${_list[index].name}",
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                          subtitle:  Row(
+                          subtitle: Row(
                             children: [
                               Icon(
                                 Icons.done_all_outlined,
@@ -99,11 +96,11 @@ class AllUserPage extends StatelessWidget {
                               ),
                               Flexible(
                                   child: Text(
-                                    "${_list[index].about}",
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    softWrap: false,
-                                  ))
+                                "${_list[index].about}",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                softWrap: false,
+                              ))
                             ],
                           ),
                           trailing: const Column(
@@ -127,13 +124,10 @@ class AllUserPage extends StatelessWidget {
                           ),
                         );
                       });
-
-                }else{
+                } else {
                   return const Center(
-                    child: Text('No Connections Found!',
-                        style: TextStyle(fontSize: 20)),
+                    child: Text('No Connections Found!', style: TextStyle(fontSize: 20)),
                   );
-
                 }
             }
           },
