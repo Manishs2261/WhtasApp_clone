@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:whatsappclone/src/core/model/user_model.dart';
+
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
 import 'package:whatsappclone/src/features/authentication/login_screen/login_screen.dart';
 

@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -90,6 +93,19 @@ class AppApis{
         .snapshots();
   }
 
+  // for getting all users from firestore database
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessage() {
+    ///  log('\nUserIds: $userIds');
+
+    return firestore
+        .collection('message')
+    // .where('id',
+    // whereIn: userIds.isEmpty
+    //     ? ['']
+    //     : userIds) //because empty list throws an error
+       // .where('id', isNotEqualTo: user.uid)
+        .snapshots();
+  }
 
 
 
@@ -102,6 +118,34 @@ class AppApis{
 
     });
   }
+
+
+
+
+  // update profile picture of user
+  static Future<void> updateProfilePicture(File file) async {
+    //getting image file extension
+    final ext = file.path.split('.').last;
+    log('Extension: $ext');
+
+    //storage file ref with path
+    final ref = storage.ref().child('profile_pictures/${user.uid}.$ext');
+
+    //uploading image
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {
+      log('Data Transferred: ${p0.bytesTransferred / 1000} kb');
+    });
+
+    //updating image in firestore database
+    me.image = await ref.getDownloadURL();
+    await firestore
+        .collection('users')
+        .doc(user.uid)
+        .update({'image': me.image});
+  }
+
 
 
 }

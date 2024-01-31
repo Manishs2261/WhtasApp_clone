@@ -36,7 +36,9 @@ class _SilverAppBarWidgetsState extends State<SilverAppBarWidgets> {
         IconButton(
           onPressed: () {
 
-
+           setState(() {
+             _isSearching = !_isSearching;
+           });
 
 
           },

@@ -1,208 +1,247 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsappclone/src/core/model/chat_user.dart';
+import 'package:whatsappclone/src/core/res/apis/apis.dart';
 
 import 'package:whatsappclone/src/features/profile/profile.dart';
 
+import '../../../main.dart';
+import '../../core/model/message.dart';
 import '../home/Home.dart';
 
 class PersonChatPage extends StatelessWidget {
-  const PersonChatPage({super.key, required this.user,});
+  const  PersonChatPage({
+    super.key,
+    required this.user,
+  });
 
-  final ChatUser user ;
+  final ChatUser user;
 
   @override
   Widget build(BuildContext context) {
+    //for storing all messages
+    List<Message> _list = [];
+
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>  ProfilePage(user: user,),
-                    maintainState: false));
-          },
-          child: Row(
-            children: [
-              InkWell(
-                child: const Icon(Icons.arrow_back),
-                onTap: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>  HomeScreen()));
-                },
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              CircleAvatar(
-                backgroundColor: Colors.blue[100],
-                child: const Icon(Icons.person_outline),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          flexibleSpace: Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProfilePage(
+                              user: user,
+                            ),
+                        maintainState: false));
+              },
+              child: Row(
                 children: [
-                  Text("Manish"),
-                  SizedBox(
-                    height: 2,
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                      },
+                      icon: Icon(Icons.arrow_back)),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(mq.height * .03),
+                    child: CachedNetworkImage(
+                      width: mq.height * .05,
+                      height: mq.height * .05,
+                      imageUrl: user.image,
+                      placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.person),
+                    ),
                   ),
-                  Text(
-                    "Online",
-                    style: TextStyle(fontSize: 12, color: Colors.white70),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Manish"),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                        "Online",
+                        style: TextStyle(fontSize: 12, color: Colors.white70),
+                      )
+                    ],
                   )
-                ],
-              )
-            ],
-          ),
-        ),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
-          PopupMenuButton(
-              shape: BeveledRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              itemBuilder: (BuildContext context) {
-                return [
-                  const PopupMenuItem(
-                    value: "View context",
-                    child: Text("View contact"),
-                  ),
-                  const PopupMenuItem(
-                    value: "Media ,links, and docs",
-                    child: Text("Media,links,and docs"),
-                  ),
-                  const PopupMenuItem(
-                    value: "Searsh",
-                    child: Text("Search"),
-                  ),
-                  const PopupMenuItem(
-                    value: "Mute notification",
-                    child: Text("Mute notification"),
-                  ),
-                  const PopupMenuItem(
-                    value: "Disappearring messages",
-                    child: Text("Disappearing messages"),
-                  ),
-                  const PopupMenuItem(
-                    value: "Wallpaper",
-                    child: Text("Wallpaper"),
-                  ),
-                  const PopupMenuItem(
-                    value: "More",
-                    child: Text("More"),
-                  ),
-                ];
-              })
-        ],
-      ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height - 140,
-              child: ListView(
-                shrinkWrap: true,
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  const OwnMessageCard(),
-                  const ReplyCard(),
-                  const OwnMessageCard(),
-                  const ReplyCard(),
-                  const OwnMessageCard(),
-                  const ReplyCard(),
-                  const OwnMessageCard(),
-                  const ReplyCard(),
-                  const OwnMessageCard(),
-                  const ReplyCard(),
-                  const OwnMessageCard(),
-                  const ReplyCard(),
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 60,
-                    child: Card(
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)),
-                      margin:
-                          const EdgeInsets.only(left: 2, right: 2, bottom: 8),
-                      child: TextFormField(
-                        textAlignVertical: TextAlignVertical.center,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 100,
-                        minLines: 1,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                InkWell(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          builder: (builder) => bottomSheet());
-                                    },
-                                    child: const Icon(Icons.attach_file)),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Icon(Icons.currency_rupee_outlined),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Icon(Icons.camera_alt_outlined),
-                                const SizedBox(
-                                  width: 10,
-                                )
-                              ],
-                            ),
-                            hintText: "Type a Message",
-                            contentPadding: const EdgeInsets.all(8),
-                            prefixIcon: IconButton(
-                              icon: const Icon(Icons.emoji_emotions_outlined),
-                              onPressed: () {},
-                            )),
+          ),
+          actions: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
+            PopupMenuButton(
+                shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                itemBuilder: (BuildContext context) {
+                  return [
+                    const PopupMenuItem(
+                      value: "View context",
+                      child: Text("View contact"),
+                    ),
+                    const PopupMenuItem(
+                      value: "Media ,links, and docs",
+                      child: Text("Media,links,and docs"),
+                    ),
+                    const PopupMenuItem(
+                      value: "Searsh",
+                      child: Text("Search"),
+                    ),
+                    const PopupMenuItem(
+                      value: "Mute notification",
+                      child: Text("Mute notification"),
+                    ),
+                    const PopupMenuItem(
+                      value: "Disappearring messages",
+                      child: Text("Disappearing messages"),
+                    ),
+                    const PopupMenuItem(
+                      value: "Wallpaper",
+                      child: Text("Wallpaper"),
+                    ),
+                    const PopupMenuItem(
+                      value: "More",
+                      child: Text("More"),
+                    ),
+                  ];
+                })
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder(
+                  stream: AppApis.getAllMessage(),
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                      case ConnectionState.none:
+                        return Center(child: CircularProgressIndicator());
+                      case ConnectionState.active:
+                      // TODO: Handle this case.
+                      case ConnectionState.done:
+                      // TODO: Handle this case.
+                        final data = snapshot.data?.docs;
+                        _list = data
+                            ?.map((e) => Message.fromJson(e.data()))
+                            .toList() ??
+                            [];
+
+                        _list.add(Message(toId: 'xyz',
+                            msg: 'Hii',
+                            read: '',
+                            type: Type.text,
+                            fromId: AppApis.user.uid,
+                            sent: "12.22"));
+                        _list.add(Message(toId: AppApis.user.uid,
+                            msg: 'reetu',
+                            read: '',
+                            type:Type.text,
+                            fromId: 'xyd',
+                            sent: '14.55'));
+
+                        if (_list.isNotEmpty) {
+                          return ListView.builder(
+                              itemCount: _list.length,
+                              itemBuilder: (context, index) {
+                                return MessageCard(message: _list[index]);
+                              });
+                        } else {
+                          return Center(
+                            child: Text("Say hello "),
+                          );
+                        }
+                    }
+                  }),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width - 60,
+                      child: Card(
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                        margin: const EdgeInsets.only(left: 2, right: 2, bottom: 8),
+                        child: TextFormField(
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 5,
+                          minLines: 1,
+                          onTapOutside: (e) => FocusScope.of(context).unfocus(),
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  InkWell(
+                                      onTap: () {
+                                        showModalBottomSheet(
+                                            backgroundColor: Colors.transparent,
+                                            context: context,
+                                            builder: (builder) => bottomSheet());
+                                      },
+                                      child: const Icon(Icons.attach_file)),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Icon(Icons.currency_rupee_outlined),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Icon(Icons.camera_alt_outlined),
+                                  const SizedBox(
+                                    width: 10,
+                                  )
+                                ],
+                              ),
+                              hintText: "Type a Message",
+                              contentPadding: const EdgeInsets.all(8),
+                              prefixIcon: IconButton(
+                                icon: const Icon(Icons.emoji_emotions_outlined),
+                                onPressed: () {},
+                              )),
+                        ),
                       ),
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 2, right: 3, bottom: 8),
-                    child: CircleAvatar(
-                      backgroundColor: Color(0xff01937c),
-                      radius: 25,
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.white,
+                    const Padding(
+                      padding: EdgeInsets.only(left: 2, right: 3, bottom: 8),
+                      child: CircleAvatar(
+                        backgroundColor: Color(0xff01937c),
+                        radius: 25,
+                        child: Icon(
+                          Icons.send,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
           ],
-        ),
-      ),
-    );
+        ));
   }
 
   //===========bottom sheet ====================
   Widget bottomSheet() {
     return SizedBox(
       height: 360,
-     // width: MediaQuery.of(context).size.width - 10,
+      // width: MediaQuery.of(context).size.width - 10,
       child: Card(
         margin: const EdgeInsets.all(18),
         child: Padding(
@@ -212,8 +251,7 @@ class PersonChatPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  buttomSheetIcon(
-                      Icons.insert_drive_file, Colors.indigo, "Document"),
+                  buttomSheetIcon(Icons.insert_drive_file, Colors.indigo, "Document"),
                   const SizedBox(
                     width: 40,
                   ),
@@ -230,8 +268,7 @@ class PersonChatPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  buttomSheetIcon(
-                      Icons.audio_file, Colors.orangeAccent, "Audio"),
+                  buttomSheetIcon(Icons.audio_file, Colors.orangeAccent, "Audio"),
                   const SizedBox(
                     width: 40,
                   ),
@@ -239,8 +276,7 @@ class PersonChatPage extends StatelessWidget {
                   const SizedBox(
                     width: 40,
                   ),
-                  buttomSheetIcon(Icons.currency_rupee_outlined,
-                      Colors.lightGreen, "Payment"),
+                  buttomSheetIcon(Icons.currency_rupee_outlined, Colors.lightGreen, "Payment"),
                 ],
               ),
               const SizedBox(
@@ -290,8 +326,23 @@ class PersonChatPage extends StatelessWidget {
   }
 }
 
+
+class MessageCard extends StatelessWidget {
+   MessageCard({super.key, required this.message});
+
+  //for storing all messages
+  final Message message;
+  @override
+  Widget build(BuildContext context) {
+    return AppApis.user.uid == message.fromId
+    ? OwnMessageCard()
+    : ReplyCard();
+  }
+}
+
+
 class OwnMessageCard extends StatelessWidget {
-  const OwnMessageCard({super.key});
+const    OwnMessageCard({super.key,});
 
   @override
   Widget build(BuildContext context) {
@@ -299,20 +350,22 @@ class OwnMessageCard extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 45,
+          maxWidth: MediaQuery
+              .of(context)
+              .size
+              .width - 45,
         ),
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: const Color(0xffd5ffd0),
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          child: const Stack(
+          child: Stack(
             children: [
               Padding(
-                padding:
-                    EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
+                padding: EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
                 child: Text(
-                  "Hey i am using WhatsApp",
+                  "mansih hjkfd gjksdfhgudsfgjk dfkjhdsufkg fjkd",
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -342,7 +395,7 @@ class OwnMessageCard extends StatelessWidget {
 }
 
 class ReplyCard extends StatelessWidget {
-  const ReplyCard({super.key});
+ const   ReplyCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -350,7 +403,10 @@ class ReplyCard extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 45,
+          maxWidth: MediaQuery
+              .of(context)
+              .size
+              .width - 45,
         ),
         child: Card(
           elevation: 1,
@@ -360,8 +416,7 @@ class ReplyCard extends StatelessWidget {
           child: const Stack(
             children: [
               Padding(
-                padding:
-                    EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
+                padding: EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
                 child: Text(
                   "Hey",
                   style: TextStyle(fontSize: 16),

@@ -1,6 +1,12 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
+
+import '../../../../main.dart';
 
 class SelfProfile extends StatefulWidget {
   const SelfProfile({super.key});
@@ -11,6 +17,7 @@ class SelfProfile extends StatefulWidget {
 
 class _SelfProfileState extends State<SelfProfile> {
   final _formKey = GlobalKey<FormState>();
+  String? _image;
 
   @override
   void initState() {
@@ -29,31 +36,113 @@ class _SelfProfileState extends State<SelfProfile> {
         children: [
           Stack(
             children: [
-              Align(
-                heightFactor: 1.2,
-                alignment: Alignment.center,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(360),
-                  clipBehavior: Clip.antiAlias,
-                  child: CachedNetworkImage(
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.fill,
-                    imageUrl: AppApis.me.image,
-                    placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                  ),
-                ),
-              ),
+              _image != null
+                  ? Align(
+                      heightFactor: 1.2,
+                      alignment: Alignment.center,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(360),
+                          clipBehavior: Clip.antiAlias,
+                          child: Image.file(
+                            File(_image!),
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.fill,
+                          )),
+                    )
+                  : Align(
+                      heightFactor: 1.2,
+                      alignment: Alignment.center,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(360),
+                        clipBehavior: Clip.antiAlias,
+                        child: CachedNetworkImage(
+                          width: 150,
+                          height: 150,
+                          fit: BoxFit.fill,
+                          imageUrl: AppApis.me.image,
+                          placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                        ),
+                      ),
+                    ),
               Positioned(
                 bottom: 15,
                 right: 140,
-                child: CircleAvatar(
-                  child: Icon(
-                    Icons.camera_alt_outlined,
-                    color: Colors.white,
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.white,
+                        useSafeArea: true,
+                        builder: (_) {
+                          return ListView(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.only(top: mq.height * .03, bottom: mq.height * .05),
+                            children: [
+                              Text(
+                                'Pick profile Picture',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                      onPressed: () async {
+                                        final ImagePicker _picker = ImagePicker();
+                                        // Pick an image
+                                        final XFile? image =
+                                            await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+                                        if (image != null) {
+                                          log('Image Path: ${image.path}');
+                                          setState(() {
+                                            _image = image.path;
+                                          });
+
+                                           AppApis.updateProfilePicture(File(_image!));
+                                          // for hiding bottom sheet
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.photo_album_outlined,
+                                        size: 50,
+                                      )),
+                                  IconButton(
+                                      onPressed: () async {
+                                        final ImagePicker _picker = ImagePicker();
+                                        // Pick an image
+                                        final XFile? image =
+                                            await _picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+                                        if (image != null) {
+                                          setState(() {
+                                            _image = image.path;
+                                          });
+                                        }
+                                        AppApis.updateProfilePicture(File(_image!));
+                                        Navigator.pop(context);
+                                      },
+                                      icon: Icon(
+                                        Icons.camera_alt_outlined,
+                                        size: 50,
+                                      )),
+                                ],
+                              )
+                            ],
+                          );
+                        });
+                  },
+                  child: CircleAvatar(
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      color: Colors.white,
+                    ),
+                    backgroundColor: Colors.green,
                   ),
-                  backgroundColor: Colors.green,
                 ),
               )
             ],
@@ -69,7 +158,7 @@ class _SelfProfileState extends State<SelfProfile> {
                         return Form(
                           key: _formKey,
                           child: Container(
-                            padding: EdgeInsets.only(bottom: 80,left: 20,right: 20,top: 20),
+                            padding: EdgeInsets.only(bottom: 80, left: 20, right: 20, top: 20),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius:
@@ -93,7 +182,6 @@ class _SelfProfileState extends State<SelfProfile> {
                                   keyboardType: TextInputType.text,
                                   decoration: InputDecoration(hintText: 'Enter your name'),
                                 ),
-
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -106,21 +194,19 @@ class _SelfProfileState extends State<SelfProfile> {
                                     SizedBox(width: 8),
                                     TextButton(
                                       onPressed: () {
-
-                                        if(_formKey.currentState!.validate()){
+                                        if (_formKey.currentState!.validate()) {
                                           print("save");
                                           _formKey.currentState!.save();
                                           AppApis.updateUserInfo();
                                         }
-
                                       },
                                       child: Text('Save'),
                                     ),
                                   ],
                                 ),
-
-                                SizedBox(height: 20,)
-
+                                SizedBox(
+                                  height: 20,
+                                )
                               ],
                             ),
                           ),
