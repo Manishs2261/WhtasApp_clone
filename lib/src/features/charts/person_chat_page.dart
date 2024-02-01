@@ -7,10 +7,11 @@ import 'package:whatsappclone/src/features/profile/profile.dart';
 
 import '../../../main.dart';
 import '../../core/model/message.dart';
+import '../../utils/helper/my_date_util.dart';
 import '../home/Home.dart';
 
-class PersonChatPage extends StatelessWidget {
-  const  PersonChatPage({
+class PersonChatPage extends StatefulWidget {
+  const PersonChatPage({
     super.key,
     required this.user,
   });
@@ -18,9 +19,18 @@ class PersonChatPage extends StatelessWidget {
   final ChatUser user;
 
   @override
+  State<PersonChatPage> createState() => _PersonChatPageState();
+}
+
+class _PersonChatPageState extends State<PersonChatPage> {
+  final _textController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
     //for storing all messages
     List<Message> _list = [];
+
+    AppApis.getConversationID("12");
 
     return Scaffold(
         appBar: AppBar(
@@ -32,9 +42,8 @@ class PersonChatPage extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            ProfilePage(
-                              user: user,
+                        builder: (context) => ProfilePage(
+                              user: widget.user,
                             ),
                         maintainState: false));
               },
@@ -50,7 +59,7 @@ class PersonChatPage extends StatelessWidget {
                     child: CachedNetworkImage(
                       width: mq.height * .05,
                       height: mq.height * .05,
-                      imageUrl: user.image,
+                      imageUrl: widget.user.image,
                       placeholder: (context, url) => CircularProgressIndicator(),
                       errorWidget: (context, url, error) => Icon(Icons.person),
                     ),
@@ -119,7 +128,7 @@ class PersonChatPage extends StatelessWidget {
           children: [
             Expanded(
               child: StreamBuilder(
-                  stream: AppApis.getAllMessage(),
+                  stream: AppApis.getAllMessages(widget.user),
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
@@ -128,25 +137,9 @@ class PersonChatPage extends StatelessWidget {
                       case ConnectionState.active:
                       // TODO: Handle this case.
                       case ConnectionState.done:
-                      // TODO: Handle this case.
+                        // TODO: Handle this case.
                         final data = snapshot.data?.docs;
-                        _list = data
-                            ?.map((e) => Message.fromJson(e.data()))
-                            .toList() ??
-                            [];
-
-                        _list.add(Message(toId: 'xyz',
-                            msg: 'Hii',
-                            read: '',
-                            type: Type.text,
-                            fromId: AppApis.user.uid,
-                            sent: "12.22"));
-                        _list.add(Message(toId: AppApis.user.uid,
-                            msg: 'reetu',
-                            read: '',
-                            type:Type.text,
-                            fromId: 'xyd',
-                            sent: '14.55'));
+                        _list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
 
                         if (_list.isNotEmpty) {
                           return ListView.builder(
@@ -169,15 +162,13 @@ class PersonChatPage extends StatelessWidget {
                 child: Row(
                   children: [
                     SizedBox(
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width - 60,
+                      width: MediaQuery.of(context).size.width - 60,
                       child: Card(
                         elevation: 10,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                         margin: const EdgeInsets.only(left: 2, right: 2, bottom: 8),
                         child: TextFormField(
+                          controller: _textController,
                           textAlignVertical: TextAlignVertical.center,
                           keyboardType: TextInputType.multiline,
                           maxLines: 5,
@@ -218,14 +209,22 @@ class PersonChatPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(left: 2, right: 3, bottom: 8),
-                      child: CircleAvatar(
-                        backgroundColor: Color(0xff01937c),
-                        radius: 25,
-                        child: Icon(
-                          Icons.send,
-                          color: Colors.white,
+                      child: InkWell(
+                        onTap: () {
+                          if (_textController.text.isNotEmpty) {
+                            AppApis.sendMessage(widget.user, _textController.text, Type.text);
+                            _textController.text = "";
+                          }
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Color(0xff01937c),
+                          radius: 25,
+                          child: Icon(
+                            Icons.send,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     )
@@ -326,34 +325,44 @@ class PersonChatPage extends StatelessWidget {
   }
 }
 
-
 class MessageCard extends StatelessWidget {
-   MessageCard({super.key, required this.message});
+  MessageCard({super.key, required this.message});
 
   //for storing all messages
   final Message message;
+
   @override
   Widget build(BuildContext context) {
     return AppApis.user.uid == message.fromId
-    ? OwnMessageCard()
-    : ReplyCard();
+        ? OwnMessageCard(
+            message: message,
+          )
+        : ReplyCard(message: message);
   }
 }
 
-
 class OwnMessageCard extends StatelessWidget {
-const    OwnMessageCard({super.key,});
+  const OwnMessageCard({
+    super.key,
+    required this.message,
+  });
+
+  //for storing all messages
+  final Message message;
 
   @override
   Widget build(BuildContext context) {
+
+    if(message.read.isEmpty){
+      //AppApis.updateMessageReadStatus(message);
+      print("manish");
+    }
+
     return Align(
       alignment: Alignment.centerRight,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery
-              .of(context)
-              .size
-              .width - 45,
+          maxWidth: MediaQuery.of(context).size.width - 45,
         ),
         child: Card(
           elevation: 1,
@@ -365,7 +374,7 @@ const    OwnMessageCard({super.key,});
               Padding(
                 padding: EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
                 child: Text(
-                  "mansih hjkfd gjksdfhgudsfgjk dfkjhdsufkg fjkd",
+                  "${message.msg}",
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -375,14 +384,15 @@ const    OwnMessageCard({super.key,});
                 child: Row(
                   children: [
                     Text(
-                      "23:21 pm",
+                      "${MyDateUtil.getFormattedTime(context: context, time: message.sent)}",
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
-                    Icon(
-                      Icons.done_all_outlined,
-                      size: 15,
-                      color: Colors.blue,
-                    ),
+                    if (message.read.isNotEmpty)
+                      Icon(
+                        Icons.done_all_outlined,
+                        size: 15,
+                        color: Colors.blue,
+                      ),
                   ],
                 ),
               )
@@ -395,7 +405,10 @@ const    OwnMessageCard({super.key,});
 }
 
 class ReplyCard extends StatelessWidget {
- const   ReplyCard({super.key});
+  const ReplyCard({super.key, required this.message});
+
+  //for storing all messages
+  final Message message;
 
   @override
   Widget build(BuildContext context) {
@@ -403,22 +416,19 @@ class ReplyCard extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery
-              .of(context)
-              .size
-              .width - 45,
+          maxWidth: MediaQuery.of(context).size.width - 45,
         ),
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: const Color(0xfff3fde8),
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          child: const Stack(
+          child: Stack(
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
                 child: Text(
-                  "Hey",
+                  "${message.msg}",
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -426,7 +436,7 @@ class ReplyCard extends StatelessWidget {
                 right: 4,
                 bottom: 4,
                 child: Text(
-                  "23:21 pm",
+                  "${MyDateUtil.getFormattedTime(context: context, time: message.sent)}",
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               )
