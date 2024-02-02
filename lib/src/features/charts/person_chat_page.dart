@@ -1,5 +1,12 @@
+import 'dart:developer';
+
+import 'dart:io';
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:whatsappclone/src/core/model/chat_user.dart';
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
 
@@ -24,6 +31,8 @@ class PersonChatPage extends StatefulWidget {
 
 class _PersonChatPageState extends State<PersonChatPage> {
   final _textController = TextEditingController();
+
+  bool showEmoji = false, _isUploading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +152,7 @@ class _PersonChatPageState extends State<PersonChatPage> {
 
                         if (_list.isNotEmpty) {
                           return ListView.builder(
+                              reverse: true,
                               itemCount: _list.length,
                               itemBuilder: (context, index) {
                                 return MessageCard(message: _list[index]);
@@ -155,6 +165,11 @@ class _PersonChatPageState extends State<PersonChatPage> {
                     }
                   }),
             ),
+            if (_isUploading)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(),
+              ),
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: Align(
@@ -169,6 +184,9 @@ class _PersonChatPageState extends State<PersonChatPage> {
                         margin: const EdgeInsets.only(left: 2, right: 2, bottom: 8),
                         child: TextFormField(
                           controller: _textController,
+                          onTap: () {
+                            if (showEmoji) setState(() => showEmoji = !showEmoji);
+                          },
                           textAlignVertical: TextAlignVertical.center,
                           keyboardType: TextInputType.multiline,
                           maxLines: 5,
@@ -184,7 +202,134 @@ class _PersonChatPageState extends State<PersonChatPage> {
                                         showModalBottomSheet(
                                             backgroundColor: Colors.transparent,
                                             context: context,
-                                            builder: (builder) => bottomSheet());
+                                            builder: (builder) {
+                                              return SizedBox(
+                                                height: 360,
+                                                // width: MediaQuery.of(context).size.width - 10,
+                                                child: Card(
+                                                  margin: const EdgeInsets.all(18),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.insert_drive_file,
+                                                              color: Colors.indigo,
+                                                              text: "Document",
+                                                              onPressed: () {
+                                                                print("document");
+                                                              },
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 40,
+                                                            ),
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.camera_alt,
+                                                              color: Colors.pink,
+                                                              text: "Camera",
+                                                              onPressed: () {
+                                                                print("camera");
+                                                              },
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 40,
+                                                            ),
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.photo,
+                                                              color: Colors.purpleAccent,
+                                                              text: "Gallery",
+                                                              onPressed: () async {
+                                                                final ImagePicker picker = ImagePicker();
+
+                                                                // Pick an image
+                                                                final List<XFile> images =
+                                                                    await picker.pickMultiImage(imageQuality: 70);
+
+                                                                for (var i in images) {
+                                                                    setState(() => _isUploading = true);
+                                                                  await AppApis.sendChatImage(
+                                                                      widget.user, File(i.path));
+
+                                                                    setState(() => _isUploading = false);
+                                                                }
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.audio_file,
+                                                              color: Colors.orangeAccent,
+                                                              text: "Audio",
+                                                              onPressed: () {
+                                                                print("audio");
+                                                              },
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 40,
+                                                            ),
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.location_on,
+                                                              color: Colors.green,
+                                                              text: "Location",
+                                                              onPressed: () {
+                                                                print("location");
+                                                              },
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 40,
+                                                            ),
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.currency_rupee_outlined,
+                                                              color: Colors.lightGreen,
+                                                              text: "Payment",
+                                                              onPressed: () {
+                                                                print("paymet");
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.person,
+                                                              color: Colors.blueAccent,
+                                                              text: "Contact",
+                                                              onPressed: () {
+                                                                print("contact");
+                                                              },
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 40,
+                                                            ),
+                                                            ButtonSheetIcon(
+                                                              icon: Icons.poll_outlined,
+                                                              color: Colors.grey,
+                                                              text: "Poll",
+                                                              onPressed: () {
+                                                                print("ploo");
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            });
                                       },
                                       child: const Icon(Icons.attach_file)),
                                   const SizedBox(
@@ -194,7 +339,22 @@ class _PersonChatPageState extends State<PersonChatPage> {
                                   const SizedBox(
                                     width: 10,
                                   ),
-                                  const Icon(Icons.camera_alt_outlined),
+                                  IconButton(
+                                    onPressed: () async {
+                                      final ImagePicker picker = ImagePicker();
+
+                                      // Pick an image
+                                      final XFile? image =
+                                          await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
+                                      if (image != null) {
+                                        setState(() => _isUploading = true);
+
+                                        await AppApis.sendChatImage(widget.user, File(image.path));
+                                        setState(() => _isUploading = false);
+                                      }
+                                    },
+                                    icon: Icon(Icons.camera_alt_outlined),
+                                  ),
                                   const SizedBox(
                                     width: 10,
                                   )
@@ -204,7 +364,11 @@ class _PersonChatPageState extends State<PersonChatPage> {
                               contentPadding: const EdgeInsets.all(8),
                               prefixIcon: IconButton(
                                 icon: const Icon(Icons.emoji_emotions_outlined),
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    showEmoji = !showEmoji;
+                                  });
+                                },
                               )),
                         ),
                       ),
@@ -232,75 +396,41 @@ class _PersonChatPageState extends State<PersonChatPage> {
                 ),
               ),
             ),
+            if (showEmoji)
+              EmojiPicker(
+                onBackspacePressed: () {
+                  // Do something when the user taps the backspace button (optional)
+                  // Set it to null to hide the Backspace-Button
+                },
+                textEditingController: _textController, // pass here the same [TextEditingController] that is
+                // connected to your input field, usually a [TextFormField]
+                config: Config(
+                  height: 256,
+                ),
+              )
           ],
         ));
   }
+}
 
-  //===========bottom sheet ====================
-  Widget bottomSheet() {
-    return SizedBox(
-      height: 360,
-      // width: MediaQuery.of(context).size.width - 10,
-      child: Card(
-        margin: const EdgeInsets.all(18),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  buttomSheetIcon(Icons.insert_drive_file, Colors.indigo, "Document"),
-                  const SizedBox(
-                    width: 40,
-                  ),
-                  buttomSheetIcon(Icons.camera_alt, Colors.pink, "Camera"),
-                  const SizedBox(
-                    width: 40,
-                  ),
-                  buttomSheetIcon(Icons.photo, Colors.purpleAccent, "Gallery"),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  buttomSheetIcon(Icons.audio_file, Colors.orangeAccent, "Audio"),
-                  const SizedBox(
-                    width: 40,
-                  ),
-                  buttomSheetIcon(Icons.location_on, Colors.green, "Location"),
-                  const SizedBox(
-                    width: 40,
-                  ),
-                  buttomSheetIcon(Icons.currency_rupee_outlined, Colors.lightGreen, "Payment"),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  buttomSheetIcon(Icons.person, Colors.blueAccent, "Contact"),
-                  const SizedBox(
-                    width: 40,
-                  ),
-                  buttomSheetIcon(Icons.poll_outlined, Colors.grey, "Poll"),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class ButtonSheetIcon extends StatelessWidget {
+  ButtonSheetIcon({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.text,
+    required this.onPressed,
+  });
 
-  Widget buttomSheetIcon(IconData icon, Color color, String text) {
+  final IconData icon;
+  final Color color;
+  final String text;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onPressed,
       child: Column(
         children: [
           CircleAvatar(
@@ -325,23 +455,28 @@ class _PersonChatPageState extends State<PersonChatPage> {
   }
 }
 
-class MessageCard extends StatelessWidget {
+class MessageCard extends StatefulWidget {
   MessageCard({super.key, required this.message});
 
   //for storing all messages
   final Message message;
 
   @override
+  State<MessageCard> createState() => _MessageCardState();
+}
+
+class _MessageCardState extends State<MessageCard> {
+  @override
   Widget build(BuildContext context) {
-    return AppApis.user.uid == message.fromId
+    return AppApis.user.uid == widget.message.fromId
         ? OwnMessageCard(
-            message: message,
+            message: widget.message,
           )
-        : ReplyCard(message: message);
+        : ReplyCard(message: widget.message);
   }
 }
 
-class OwnMessageCard extends StatelessWidget {
+class OwnMessageCard extends StatefulWidget {
   const OwnMessageCard({
     super.key,
     required this.message,
@@ -351,9 +486,13 @@ class OwnMessageCard extends StatelessWidget {
   final Message message;
 
   @override
-  Widget build(BuildContext context) {
+  State<OwnMessageCard> createState() => _OwnMessageCardState();
+}
 
-    if(message.read.isEmpty){
+class _OwnMessageCardState extends State<OwnMessageCard> {
+  @override
+  Widget build(BuildContext context) {
+    if (widget.message.read.isEmpty) {
       //AppApis.updateMessageReadStatus(message);
       print("manish");
     }
@@ -373,10 +512,15 @@ class OwnMessageCard extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
-                child: Text(
-                  "${message.msg}",
-                  style: TextStyle(fontSize: 16),
-                ),
+                child: widget.message.type == Type.text
+                    ? Text(
+                        "${widget.message.msg}",
+                        style: TextStyle(fontSize: 16),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: widget.message.msg.toString(),
+                        errorWidget: (context, url, error) => Icon(Icons.image),
+                      ),
               ),
               Positioned(
                 right: 4,
@@ -384,10 +528,10 @@ class OwnMessageCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      "${MyDateUtil.getFormattedTime(context: context, time: message.sent)}",
+                      "${MyDateUtil.getFormattedTime(context: context, time: widget.message.sent)}",
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
-                    if (message.read.isNotEmpty)
+                    if (widget.message.read.isNotEmpty)
                       Icon(
                         Icons.done_all_outlined,
                         size: 15,
@@ -427,10 +571,17 @@ class ReplyCard extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 10, right: 80, top: 5, bottom: 20),
-                child: Text(
-                  "${message.msg}",
-                  style: TextStyle(fontSize: 16),
-                ),
+                child: message.type == Type.text
+                    ? Text(
+                        "${message.msg}",
+                        style: TextStyle(fontSize: 16),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: message.msg.toString(),
+                        width: mq.height * .05,
+                        height: mq.height * .05,
+                        errorWidget: (context, url, error) => Icon(Icons.image),
+                      ),
               ),
               Positioned(
                 right: 4,

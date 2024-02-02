@@ -7,6 +7,7 @@ import 'package:whatsappclone/src/core/model/message.dart';
 
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
 import 'package:whatsappclone/src/features/authentication/login_screen/login_screen.dart';
+import 'package:whatsappclone/src/utils/helper/my_date_util.dart';
 
 import '../../core/model/chat_user.dart';
 import '../charts/person_chat_page.dart';
@@ -69,7 +70,9 @@ class _AllUserPageState extends State<AllUserPage> {
                       padding: EdgeInsets.zero,
                       itemCount: _list.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return ChatUserCardWidgets( user: _list[index],);
+                        return ChatUserCardWidgets(
+                          user: _list[index],
+                        );
                       });
                 } else {
                   return const Center(
@@ -83,96 +86,81 @@ class _AllUserPageState extends State<AllUserPage> {
 }
 
 class ChatUserCardWidgets extends StatefulWidget {
-   ChatUserCardWidgets({
-    super.key, required this.user}) ;
+  ChatUserCardWidgets({super.key, required this.user});
 
-   final ChatUser user;
+  final ChatUser user;
 
   @override
   State<ChatUserCardWidgets> createState() => _ChatUserCardWidgetsState();
 }
 
 class _ChatUserCardWidgetsState extends State<ChatUserCardWidgets> {
-
-
   Message? message;
 
   @override
   Widget build(BuildContext context) {
-    return  StreamBuilder(
+    return StreamBuilder(
         stream: AppApis.getLastMessage(widget.user),
-        builder: (context, snapshort){
-
-
+        builder: (context, snapshort) {
           final data = snapshort.data?.docs;
 
-          final list =
-              data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
+          final list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
           if (list.isNotEmpty) message = list[0];
 
-
-        return  ListTile(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => PersonChatPage(
-                    user: widget.user,
-                  )));
-            },
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: CachedNetworkImage(
-                imageUrl: widget.user.image,
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.person),
+          return ListTile(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => PersonChatPage(
+                          user: widget.user,
+                        )));
+              },
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: CachedNetworkImage(
+                  imageUrl: widget.user.image,
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.person),
+                ),
               ),
-            ),
-            title: Text(
-              "${widget.user.name}",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            subtitle: Row(
-              children: [
-                Icon(
-                  Icons.done_all_outlined,
-                  size: 18,
-                  color: Colors.blue,
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                Flexible(
-                    child: Text(
-                      message != null ? message!.msg
-                      : "${widget.user.about}",
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      softWrap: false,
-                    ))
-              ],
-            ),
-            trailing: const Column(
-              children: [
-                Text(
-                  "12/12/1001",
-                  style: TextStyle(fontSize: 12, color: Colors.green),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                CircleAvatar(
-                  radius: 12,
-                  backgroundColor: Colors.green,
-                  child: Text(
-                    "55",
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+              title: Text(
+                "${widget.user.name}",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Row(
+                children: [
+                  Icon(
+                    Icons.done_all_outlined,
+                    size: 18,
+                    color: Colors.blue,
                   ),
-                ),
-              ],
-            ),
-          );
-
-    }
-    );
-
+                  SizedBox(
+                    width: 3,
+                  ),
+                  Flexible(
+                      child: Text(
+                    message != null ?
+                        message!.type == Type.image
+                    ? 'image'
+                        :
+                    message!.msg : "${widget.user.about}",
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                  ))
+                ],
+              ),
+              trailing: message == null
+                  ? null
+                  : message!.read.isEmpty && message!.fromId != AppApis.user.uid
+                      ? CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Colors.green,
+                          child: Text(
+                            "55",
+                            style: TextStyle(fontSize: 12, color: Colors.white),
+                          ),
+                        )
+                      : Text("${MyDateUtil.getLastMessageTime(context: context, time: message!.sent)}"));
+        });
   }
 }
