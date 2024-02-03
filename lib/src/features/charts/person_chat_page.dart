@@ -6,6 +6,8 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:whatsappclone/src/core/model/chat_user.dart';
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
@@ -14,6 +16,7 @@ import 'package:whatsappclone/src/features/profile/profile.dart';
 
 import '../../../main.dart';
 import '../../core/model/message.dart';
+import '../../utils/helper/dialogs.dart';
 import '../../utils/helper/my_date_util.dart';
 import '../home/Home.dart';
 
@@ -45,55 +48,66 @@ class _PersonChatPageState extends State<PersonChatPage> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           flexibleSpace: Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProfilePage(
-                              user: widget.user,
+              padding: const EdgeInsets.only(top: 20),
+              child: StreamBuilder(
+                stream: AppApis.getUserInfo(widget.user),
+                builder: (context, sanpshot) {
+                  final data = sanpshot.data?.docs;
+                  final list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
+
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                    user: widget.user,
+                                  ),
+                              maintainState: false));
+                    },
+                    child: Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                            },
+                            icon: Icon(Icons.arrow_back)),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(mq.height * .03),
+                          child: CachedNetworkImage(
+                            width: mq.height * .05,
+                            height: mq.height * .05,
+                            imageUrl: list.isNotEmpty ? list[0].image : widget.user.image,
+                            placeholder: (context, url) => CircularProgressIndicator(),
+                            errorWidget: (context, url, error) => Icon(Icons.person),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(list.isNotEmpty ? list[0].name : widget.user.name),
+                            SizedBox(
+                              height: 2,
                             ),
-                        maintainState: false));
-              },
-              child: Row(
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-                      },
-                      icon: Icon(Icons.arrow_back)),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(mq.height * .03),
-                    child: CachedNetworkImage(
-                      width: mq.height * .05,
-                      height: mq.height * .05,
-                      imageUrl: widget.user.image,
-                      placeholder: (context, url) => CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.person),
+                            Text(
+                              list.isNotEmpty
+                                  ? list[0].isOnline
+                                      ? 'Online'
+                                      : MyDateUtil.getLastActiveTime(context: context, lastActive: list[0].lastActive)
+                                  : MyDateUtil.getLastActiveTime(context: context, lastActive: widget.user.lastActive),
+                              style: TextStyle(fontSize: 12, color: Colors.white70),
+                            )
+                          ],
+                        )
+                      ],
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Manish"),
-                      SizedBox(
-                        height: 2,
-                      ),
-                      Text(
-                        "Online",
-                        style: TextStyle(fontSize: 12, color: Colors.white70),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
+                  );
+                },
+              )),
           actions: [
             IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
             IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
@@ -249,11 +263,11 @@ class _PersonChatPageState extends State<PersonChatPage> {
                                                                     await picker.pickMultiImage(imageQuality: 70);
 
                                                                 for (var i in images) {
-                                                                    setState(() => _isUploading = true);
+                                                                  setState(() => _isUploading = true);
                                                                   await AppApis.sendChatImage(
                                                                       widget.user, File(i.path));
 
-                                                                    setState(() => _isUploading = false);
+                                                                  setState(() => _isUploading = false);
                                                                 }
                                                               },
                                                             ),
@@ -468,13 +482,245 @@ class MessageCard extends StatefulWidget {
 class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
-    return AppApis.user.uid == widget.message.fromId
-        ? OwnMessageCard(
-            message: widget.message,
-          )
-        : ReplyCard(message: widget.message);
+    bool isMe = AppApis.user.uid == widget.message.fromId;
+    return InkWell(
+      onLongPress: (){
+        _showBottomSheet(isMe);
+
+      },
+        child: isMe
+            ? OwnMessageCard(
+                message: widget.message,
+              )
+            : ReplyCard(message: widget.message));
+  }
+
+
+
+
+  // bottom sheet for modifying message details
+  void _showBottomSheet(bool isMe) {
+    showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            children: [
+              //black divider
+              Container(
+                height: 4,
+                margin: EdgeInsets.symmetric(
+                    vertical: mq.height * .015, horizontal: mq.width * .4),
+                decoration: BoxDecoration(
+                    color: Colors.grey, borderRadius: BorderRadius.circular(8)),
+              ),
+
+              widget.message.type == Type.text
+                  ?
+              //copy option
+              _OptionItem(
+                  icon: const Icon(Icons.copy_all_rounded,
+                      color: Colors.blue, size: 26),
+                  name: 'Copy Text',
+                  onTap: () async {
+                    await Clipboard.setData(
+                        ClipboardData(text: widget.message.msg))
+                        .then((value) {
+                      //for hiding bottom sheet
+                      Navigator.pop(context);
+
+                      Dialogs.showSnackbar(context, 'Text Copied!');
+                    });
+                  })
+                  :
+              //save option
+              _OptionItem(
+                  icon: const Icon(Icons.download_rounded,
+                      color: Colors.blue, size: 26),
+                  name: 'Save Image',
+                  onTap: () async {
+                    try {
+                   //  log('Image Url: ${widget.message.msg}');
+                      await GallerySaver.saveImage(widget.message.msg,
+                          albumName: 'We Chat')
+                          .then((success) {
+                        //for hiding bottom sheet
+                        Navigator.pop(context);
+                        if (success != null && success) {
+                          Dialogs.showSnackbar(
+                              context, 'Image Successfully Saved!');
+                        }
+                      });
+                    } catch (e) {
+                      //log('ErrorWhileSavingImg: $e');
+                    }
+                  }),
+
+              //separator or divider
+              if (isMe)
+                Divider(
+                  color: Colors.black54,
+                  endIndent: mq.width * .04,
+                  indent: mq.width * .04,
+                ),
+
+              //edit option
+              if (widget.message.type == Type.text && isMe)
+                _OptionItem(
+                    icon: const Icon(Icons.edit, color: Colors.blue, size: 26),
+                    name: 'Edit Message',
+                    onTap: () {
+                      //for hiding bottom sheet
+                      Navigator.pop(context);
+
+                      _showMessageUpdateDialog();
+                    }),
+
+              //delete option
+              if (isMe)
+                _OptionItem(
+                    icon: const Icon(Icons.delete_forever,
+                        color: Colors.red, size: 26),
+                    name: 'Delete Message',
+                    onTap: () async {
+                      await AppApis.deleteMessage(widget.message).then((value) {
+                        //for hiding bottom sheet
+                        Navigator.pop(context);
+                      });
+                    }),
+
+              //separator or divider
+              Divider(
+                color: Colors.black54,
+                endIndent: mq.width * .04,
+                indent: mq.width * .04,
+              ),
+
+              //sent time
+              _OptionItem(
+                  icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
+                  name:
+                  'Sent At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}',
+                  onTap: () {}),
+
+              //read time
+              _OptionItem(
+                  icon: const Icon(Icons.remove_red_eye, color: Colors.green),
+                  name: widget.message.read.isEmpty
+                      ? 'Read At: Not seen yet'
+                      : 'Read At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.read)}',
+                  onTap: () {}),
+            ],
+          );
+        });
+  }
+
+
+
+  //dialog for updating message content
+  void _showMessageUpdateDialog() {
+    String updatedMsg = widget.message.msg;
+
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          contentPadding: const EdgeInsets.only(
+              left: 24, right: 24, top: 20, bottom: 10),
+
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20)),
+
+          //title
+          title: Row(
+            children: const [
+              Icon(
+                Icons.message,
+                color: Colors.blue,
+                size: 28,
+              ),
+              Text(' Update Message')
+            ],
+          ),
+
+          //content
+          content: TextFormField(
+            initialValue: updatedMsg,
+            maxLines: null,
+            onChanged: (value) => updatedMsg = value,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15))),
+          ),
+
+          //actions
+          actions: [
+            //cancel button
+            MaterialButton(
+                onPressed: () {
+                  //hide alert dialog
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.blue, fontSize: 16),
+                )),
+
+            //update button
+            MaterialButton(
+                onPressed: () {
+                  //hide alert dialog
+                  Navigator.pop(context);
+                //  AppApis.updateMessage(widget.message, updatedMsg);
+                },
+                child: const Text(
+                  'Update',
+                  style: TextStyle(color: Colors.blue, fontSize: 16),
+                ))
+          ],
+        )
+    );
+  }
+
+
+}
+
+
+
+//custom options card (for copy, edit, delete, etc.)
+class _OptionItem extends StatelessWidget {
+  final Icon icon;
+  final String name;
+  final VoidCallback onTap;
+
+  const _OptionItem(
+      {required this.icon, required this.name, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () => onTap(),
+        child: Padding(
+          padding: EdgeInsets.only(
+              left: mq.width * .05,
+              top: mq.height * .015,
+              bottom: mq.height * .015),
+          child: Row(children: [
+            icon,
+            Flexible(
+                child: Text('    $name',
+                    style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.black54,
+                        letterSpacing: 0.5)))
+          ]),
+        ));
   }
 }
+
 
 class OwnMessageCard extends StatefulWidget {
   const OwnMessageCard({

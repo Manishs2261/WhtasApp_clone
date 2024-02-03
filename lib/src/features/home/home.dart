@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:whatsappclone/src/features/home/widgets/pop_menu_button.dart';
 import 'package:whatsappclone/src/features/home/widgets/silverAppBarWidgets.dart';
 
@@ -19,6 +22,41 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+    AppApis.getSelfInfo();
+
+
+    SystemChannels.lifecycle.setMessageHandler((message) {
+
+      print(message);
+
+
+
+
+
+       if(AppApis.auth.currentUser != null){
+
+         if(message.toString().contains('resume'))
+           AppApis.updateActiveStatus(true);
+
+         if(message.toString().contains('pause'))
+           AppApis.updateActiveStatus(false);
+       }
+
+      return Future.value(message);
+    });
+
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
 
