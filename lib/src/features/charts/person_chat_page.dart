@@ -662,7 +662,10 @@ class _MessageCardState extends State<MessageCard> {
             MaterialButton(
                 onPressed: () {
                   //hide alert dialog
-                  Navigator.pop(context);
+
+        if (mounted) {
+          Navigator.pop(context);
+        }
                 },
                 child: const Text(
                   'Cancel',
@@ -673,8 +676,14 @@ class _MessageCardState extends State<MessageCard> {
             MaterialButton(
                 onPressed: () {
                   //hide alert dialog
-                  Navigator.pop(context);
-                //  AppApis.updateMessage(widget.message, updatedMsg);
+
+                  if (context.mounted) {
+                  setState(() {
+                    Navigator.pop(context);
+                    AppApis.updateMessage(widget.message, updatedMsg);
+                  });
+                  }
+
                 },
                 child: const Text(
                   'Update',

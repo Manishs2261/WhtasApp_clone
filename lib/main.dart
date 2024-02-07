@@ -40,9 +40,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(color: Color(0xff01937c)),
+        appBarTheme: const AppBarTheme(color: Colors.black87),
         bottomSheetTheme:
-            BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
+            BottomSheetThemeData(backgroundColor: Colors.white),
       ),
       home: // ProfilePage()
       SplashScreen()

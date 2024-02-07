@@ -32,12 +32,13 @@ class _AllUserPageState extends State<AllUserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             // //sign out function
 
-            await FirebaseAuth.instance.signOut();
-            await GoogleSignIn().signOut();
+            // await FirebaseAuth.instance.signOut();
+            // await GoogleSignIn().signOut();
 
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
 
@@ -48,40 +49,63 @@ class _AllUserPageState extends State<AllUserPage> {
           child: const Icon(Icons.message),
         ),
         body: StreamBuilder(
-          stream: AppApis.getAllUsers(),
-          builder: (BuildContext context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-              case ConnectionState.none:
-                return Center(
-                  child: CircularProgressIndicator(),
+    stream:  AppApis.getMyUsersId(),
+    builder: (context , snapshot){
+
+    switch (snapshot.connectionState) {
+    //if data is loading
+    case ConnectionState.waiting:
+    case ConnectionState.none:
+    return const Center(child: CircularProgressIndicator());
+
+    //if some or all data is loaded then show it
+    case ConnectionState.active:
+    case ConnectionState.done:
+
+    return  StreamBuilder(
+        stream: AppApis.getAllUsers(
+    snapshot.data?.docs.map((e) => e.id).toList() ?? []
+    ),
+        builder: (BuildContext context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+            case ConnectionState.none:
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+
+            case ConnectionState.active:
+            // TODO: Handle this case.
+            case ConnectionState.done:
+            // TODO: Handle this case.
+
+              final data = snapshot.data?.docs;
+              _list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
+
+              if (_list.isNotEmpty) {
+                return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: _list.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ChatUserCardWidgets(
+                        user: _list[index],
+                      );
+                    });
+              } else {
+                return const Center(
+                  child: Text('No Connections Found!', style: TextStyle(fontSize: 20)),
                 );
+              }
+          }
+        },
+      )
+    ;
 
-              case ConnectionState.active:
-              // TODO: Handle this case.
-              case ConnectionState.done:
-                // TODO: Handle this case.
+    }
+    },
 
-                final data = snapshot.data?.docs;
-                _list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
-
-                if (_list.isNotEmpty) {
-                  return ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: _list.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ChatUserCardWidgets(
-                          user: _list[index],
-                        );
-                      });
-                } else {
-                  return const Center(
-                    child: Text('No Connections Found!', style: TextStyle(fontSize: 20)),
-                  );
-                }
-            }
-          },
-        ));
+    )
+    );
   }
 }
 
@@ -111,8 +135,8 @@ class _ChatUserCardWidgetsState extends State<ChatUserCardWidgets> {
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => PersonChatPage(
-                          user: widget.user,
-                        )));
+                      user: widget.user,
+                    )));
               },
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
@@ -138,29 +162,29 @@ class _ChatUserCardWidgetsState extends State<ChatUserCardWidgets> {
                   ),
                   Flexible(
                       child: Text(
-                    message != null ?
+                        message != null ?
                         message!.type == Type.image
-                    ? 'image'
-                        :
-                    message!.msg : "${widget.user.about}",
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                  ))
+                            ? 'image'
+                            :
+                        message!.msg : "${widget.user.about}",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        softWrap: false,
+                      ))
                 ],
               ),
               trailing: message == null
                   ? null
                   : message!.read.isEmpty && message!.fromId != AppApis.user.uid
-                      ? CircleAvatar(
-                          radius: 12,
-                          backgroundColor: Colors.green,
-                          child: Text(
-                            "55",
-                            style: TextStyle(fontSize: 12, color: Colors.white),
-                          ),
-                        )
-                      : Text("${MyDateUtil.getLastMessageTime(context: context, time: message!.sent)}"));
+                  ? CircleAvatar(
+                radius: 12,
+                backgroundColor: Colors.green,
+                child: Text(
+                  "55",
+                  style: TextStyle(fontSize: 12, color: Colors.white),
+                ),
+              )
+                  : Text("${MyDateUtil.getLastMessageTime(context: context, time: message!.sent)}"));
         });
   }
 }

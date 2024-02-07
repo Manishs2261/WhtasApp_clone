@@ -13,6 +13,7 @@ class PopMenuButtonWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
         color: Colors.white,
+        iconColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         onSelected: (value) {
           if (value == 5) {
@@ -29,7 +30,7 @@ class PopMenuButtonWidgets extends StatelessWidget {
           return [
             const PopupMenuItem(
               value: "0",
-              child: Text("New group"),
+              child: PopUpMenuItemRow(),
             ),
             const PopupMenuItem(
               value: "1",
@@ -53,5 +54,19 @@ class PopMenuButtonWidgets extends StatelessWidget {
             ),
           ];
         });
+  }
+}
+
+class PopUpMenuItemRow extends StatelessWidget {
+  const PopUpMenuItemRow({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [Icon(Icons.group), Text("New group")],
+    );
   }
 }
