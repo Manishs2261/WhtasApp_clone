@@ -42,13 +42,11 @@ class _PersonChatPageState extends State<PersonChatPage> {
     //for storing all messages
     List<Message> _list = [];
 
-    AppApis.getConversationID("12");
-
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
           flexibleSpace: Padding(
-              padding: const EdgeInsets.only(top: 20),
+              padding: const EdgeInsets.only(top: 30),
               child: StreamBuilder(
                 stream: AppApis.getUserInfo(widget.user),
                 builder: (context, sanpshot) {
@@ -71,7 +69,7 @@ class _PersonChatPageState extends State<PersonChatPage> {
                             onPressed: () {
                               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                             },
-                            icon: Icon(Icons.arrow_back)),
+                            icon: Icon(Icons.arrow_back,color: Colors.green,)),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(mq.height * .03),
                           child: CachedNetworkImage(
@@ -89,7 +87,8 @@ class _PersonChatPageState extends State<PersonChatPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(list.isNotEmpty ? list[0].name : widget.user.name),
+                            Text(list.isNotEmpty ? list[0].name : widget.user.name,style: TextStyle(color: Colors
+                                .white,fontSize: 16),),
                             SizedBox(
                               height: 2,
                             ),
@@ -109,9 +108,10 @@ class _PersonChatPageState extends State<PersonChatPage> {
                 },
               )),
           actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.video_call,color: Colors.green,)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.call,color: Colors.green)),
             PopupMenuButton(
+              iconColor: Colors.green,
                 shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 itemBuilder: (BuildContext context) {
                   return [
@@ -484,10 +484,9 @@ class _MessageCardState extends State<MessageCard> {
   Widget build(BuildContext context) {
     bool isMe = AppApis.user.uid == widget.message.fromId;
     return InkWell(
-      onLongPress: (){
-        _showBottomSheet(isMe);
-
-      },
+        onLongPress: () {
+          _showBottomSheet(isMe);
+        },
         child: isMe
             ? OwnMessageCard(
                 message: widget.message,
@@ -495,17 +494,13 @@ class _MessageCardState extends State<MessageCard> {
             : ReplyCard(message: widget.message));
   }
 
-
-
-
   // bottom sheet for modifying message details
   void _showBottomSheet(bool isMe) {
     showModalBottomSheet(
         context: context,
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         builder: (_) {
           return ListView(
             shrinkWrap: true,
@@ -513,52 +508,43 @@ class _MessageCardState extends State<MessageCard> {
               //black divider
               Container(
                 height: 4,
-                margin: EdgeInsets.symmetric(
-                    vertical: mq.height * .015, horizontal: mq.width * .4),
-                decoration: BoxDecoration(
-                    color: Colors.grey, borderRadius: BorderRadius.circular(8)),
+                margin: EdgeInsets.symmetric(vertical: mq.height * .015, horizontal: mq.width * .4),
+                decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(8)),
               ),
 
               widget.message.type == Type.text
                   ?
-              //copy option
-              _OptionItem(
-                  icon: const Icon(Icons.copy_all_rounded,
-                      color: Colors.blue, size: 26),
-                  name: 'Copy Text',
-                  onTap: () async {
-                    await Clipboard.setData(
-                        ClipboardData(text: widget.message.msg))
-                        .then((value) {
-                      //for hiding bottom sheet
-                      Navigator.pop(context);
+                  //copy option
+                  _OptionItem(
+                      icon: const Icon(Icons.copy_all_rounded, color: Colors.blue, size: 26),
+                      name: 'Copy Text',
+                      onTap: () async {
+                        await Clipboard.setData(ClipboardData(text: widget.message.msg)).then((value) {
+                          //for hiding bottom sheet
+                          Navigator.pop(context);
 
-                      Dialogs.showSnackbar(context, 'Text Copied!');
-                    });
-                  })
+                          Dialogs.showSnackbar(context, 'Text Copied!');
+                        });
+                      })
                   :
-              //save option
-              _OptionItem(
-                  icon: const Icon(Icons.download_rounded,
-                      color: Colors.blue, size: 26),
-                  name: 'Save Image',
-                  onTap: () async {
-                    try {
-                   //  log('Image Url: ${widget.message.msg}');
-                      await GallerySaver.saveImage(widget.message.msg,
-                          albumName: 'We Chat')
-                          .then((success) {
-                        //for hiding bottom sheet
-                        Navigator.pop(context);
-                        if (success != null && success) {
-                          Dialogs.showSnackbar(
-                              context, 'Image Successfully Saved!');
+                  //save option
+                  _OptionItem(
+                      icon: const Icon(Icons.download_rounded, color: Colors.blue, size: 26),
+                      name: 'Save Image',
+                      onTap: () async {
+                        try {
+                          //  log('Image Url: ${widget.message.msg}');
+                          await GallerySaver.saveImage(widget.message.msg, albumName: 'We Chat').then((success) {
+                            //for hiding bottom sheet
+                            Navigator.pop(context);
+                            if (success != null && success) {
+                              Dialogs.showSnackbar(context, 'Image Successfully Saved!');
+                            }
+                          });
+                        } catch (e) {
+                          //log('ErrorWhileSavingImg: $e');
                         }
-                      });
-                    } catch (e) {
-                      //log('ErrorWhileSavingImg: $e');
-                    }
-                  }),
+                      }),
 
               //separator or divider
               if (isMe)
@@ -583,8 +569,7 @@ class _MessageCardState extends State<MessageCard> {
               //delete option
               if (isMe)
                 _OptionItem(
-                    icon: const Icon(Icons.delete_forever,
-                        color: Colors.red, size: 26),
+                    icon: const Icon(Icons.delete_forever, color: Colors.red, size: 26),
                     name: 'Delete Message',
                     onTap: () async {
                       await AppApis.deleteMessage(widget.message).then((value) {
@@ -603,8 +588,7 @@ class _MessageCardState extends State<MessageCard> {
               //sent time
               _OptionItem(
                   icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
-                  name:
-                  'Sent At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}',
+                  name: 'Sent At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}',
                   onTap: () {}),
 
               //read time
@@ -619,8 +603,6 @@ class _MessageCardState extends State<MessageCard> {
         });
   }
 
-
-
   //dialog for updating message content
   void _showMessageUpdateDialog() {
     String updatedMsg = widget.message.msg;
@@ -628,76 +610,66 @@ class _MessageCardState extends State<MessageCard> {
     showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          contentPadding: const EdgeInsets.only(
-              left: 24, right: 24, top: 20, bottom: 10),
+              contentPadding: const EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
 
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
 
-          //title
-          title: Row(
-            children: const [
-              Icon(
-                Icons.message,
-                color: Colors.blue,
-                size: 28,
+              //title
+              title: Row(
+                children: const [
+                  Icon(
+                    Icons.message,
+                    color: Colors.blue,
+                    size: 28,
+                  ),
+                  Text(' Update Message')
+                ],
               ),
-              Text(' Update Message')
-            ],
-          ),
 
-          //content
-          content: TextFormField(
-            initialValue: updatedMsg,
-            maxLines: null,
-            onChanged: (value) => updatedMsg = value,
-            decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15))),
-          ),
+              //content
+              content: TextFormField(
+                initialValue: updatedMsg,
+                maxLines: null,
+                onChanged: (value) => updatedMsg = value,
+                decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+              ),
 
-          //actions
-          actions: [
-            //cancel button
-            MaterialButton(
-                onPressed: () {
-                  //hide alert dialog
+              //actions
+              actions: [
+                //cancel button
+                MaterialButton(
+                    onPressed: () {
+                      //hide alert dialog
 
-        if (mounted) {
-          Navigator.pop(context);
-        }
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
-                )),
+                      if (mounted) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.blue, fontSize: 16),
+                    )),
 
-            //update button
-            MaterialButton(
-                onPressed: () {
-                  //hide alert dialog
+                //update button
+                MaterialButton(
+                    onPressed: () {
+                      //hide alert dialog
 
-                  if (context.mounted) {
-                  setState(() {
-                    Navigator.pop(context);
-                    AppApis.updateMessage(widget.message, updatedMsg);
-                  });
-                  }
-
-                },
-                child: const Text(
-                  'Update',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
-                ))
-          ],
-        )
-    );
+                      if (context.mounted) {
+                        setState(() {
+                          Navigator.pop(context);
+                          AppApis.updateMessage(widget.message, updatedMsg);
+                        });
+                      }
+                    },
+                    child: const Text(
+                      'Update',
+                      style: TextStyle(color: Colors.blue, fontSize: 16),
+                    ))
+              ],
+            ));
   }
-
-
 }
-
-
 
 //custom options card (for copy, edit, delete, etc.)
 class _OptionItem extends StatelessWidget {
@@ -705,31 +677,23 @@ class _OptionItem extends StatelessWidget {
   final String name;
   final VoidCallback onTap;
 
-  const _OptionItem(
-      {required this.icon, required this.name, required this.onTap});
+  const _OptionItem({required this.icon, required this.name, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () => onTap(),
         child: Padding(
-          padding: EdgeInsets.only(
-              left: mq.width * .05,
-              top: mq.height * .015,
-              bottom: mq.height * .015),
+          padding: EdgeInsets.only(left: mq.width * .05, top: mq.height * .015, bottom: mq.height * .015),
           child: Row(children: [
             icon,
             Flexible(
-                child: Text('    $name',
-                    style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.black54,
-                        letterSpacing: 0.5)))
+                child:
+                    Text('    $name', style: const TextStyle(fontSize: 15, color: Colors.black54, letterSpacing: 0.5)))
           ]),
         ));
   }
 }
-
 
 class OwnMessageCard extends StatefulWidget {
   const OwnMessageCard({

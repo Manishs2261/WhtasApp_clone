@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_notification_channel/flutter_notification_channel.dart';
 import 'package:flutter_notification_channel/notification_importance.dart';
+import 'package:provider/provider.dart';
 import 'package:whatsappclone/src/features/home/Home.dart';
+import 'package:whatsappclone/src/features/home/provider/provider.dart';
 import 'package:whatsappclone/src/features/splash_screen/splash_screen.dart';
 
 import 'firebase_options.dart';
@@ -17,36 +19,39 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]).then((value) {
-
-
-  _initializeFirebase();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((value) {
+    _initializeFirebase();
     runApp(const MyApp());
-
-
   });
-
-
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(color: Colors.black87),
-        bottomSheetTheme:
-            BottomSheetThemeData(backgroundColor: Colors.white),
-      ),
-      home: // ProfilePage()
-      SplashScreen()
-           //HomeScreen(),
+    return MultiProvider(
+
+
+      providers: [
+        ChangeNotifierProvider(  create: (_) => HomeProvider(),)
+      ],
+      child:  MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(color: Colors.green.shade50),
+          bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.white),
+        ),
+        home: // ProfilePage()
+        SplashScreen()
+      //HomeScreen(),
+    ),
+
     );
   }
 }
