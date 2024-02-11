@@ -28,30 +28,27 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-
-
       providers: [
-        ChangeNotifierProvider(  create: (_) => HomeProvider(),)
+        ChangeNotifierProvider(
+          create: (_) => HomeProvider(),
+        )
       ],
-      child:  MaterialApp(
-        title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(color: Colors.green.shade50),
-          bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.white),
-        ),
-        home: // ProfilePage()
-        SplashScreen()
-      //HomeScreen(),
-    ),
-
+      child: MaterialApp(
+          title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: AppBarTheme(color: Colors.green.shade50),
+            bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.white),
+          ),
+          home: // ProfilePage()
+              SplashScreen()
+          //HomeScreen(),
+          ),
     );
   }
 }

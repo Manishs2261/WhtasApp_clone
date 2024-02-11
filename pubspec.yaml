@@ -60,6 +60,7 @@ dependencies:
   provider: ^6.1.1
   google_nav_bar: ^5.0.6
   line_icons: ^2.0.3
+  vengamo_chat_ui: ^1.4.8
 
 
 
