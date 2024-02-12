@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_notification_channel/flutter_notification_channel.dart';
 import 'package:flutter_notification_channel/notification_importance.dart';
 import 'package:provider/provider.dart';
+import 'package:whatsappclone/src/features/charts/provider/person_chat_provider.dart';
 import 'package:whatsappclone/src/features/home/Home.dart';
 import 'package:whatsappclone/src/features/home/provider/provider.dart';
 import 'package:whatsappclone/src/features/splash_screen/splash_screen.dart';
@@ -35,7 +36,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => HomeProvider(),
-        )
+        ),
+
+        ChangeNotifierProvider(create: (_) =>  PersonChatProvider() ),
       ],
       child: MaterialApp(
           title: 'Flutter Demo',

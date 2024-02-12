@@ -29,6 +29,7 @@ class MessageCardState extends State<MessageCard> {
     return InkWell(
         onLongPress: () {
           _showBottomSheet(isMe);
+
         },
         child: isMe
             ? OwnMessageCard(
