@@ -5,38 +5,27 @@ class PersonChatProvider with ChangeNotifier {
   bool isUploading = false;
   bool removeSpaceKeyBodAndTextFormField = false;
 
-
-
-
-  showEmojiPicker(){
-
-    print("hjs");
-    if(showEmoji)
-      showEmoji = !showEmoji;
+  showEmojiPicker() {
+    if (showEmoji) showEmoji = !showEmoji;
     notifyListeners();
-
   }
 
-  showEmojiPicker1(){
+  showEmojiPicker1() {
+    showEmoji = !showEmoji;
+    if (showEmoji) {
+      removeSpaceKeyBodAndTextFormField = true;
+    } else {
+      removeSpaceKeyBodAndTextFormField = false;
+    }
 
-    print("hjs2222");
-
-      showEmoji = !showEmoji;
     notifyListeners();
-
   }
 
-  onShowSpace(){
+  onRemoveSpaceKeyBoard() {
     removeSpaceKeyBodAndTextFormField = true;
-    notifyListeners();
   }
 
-  onShowFalse(){
-
-    print("false");
-    removeSpaceKeyBodAndTextFormField = false;
-    notifyListeners();
+  onShowSpace() {
+    if (removeSpaceKeyBodAndTextFormField) removeSpaceKeyBodAndTextFormField = false;
   }
-
-
 }
