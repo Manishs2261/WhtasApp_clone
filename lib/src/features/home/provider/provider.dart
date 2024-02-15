@@ -7,10 +7,12 @@ import '../../../core/res/apis/apis.dart';
 class HomeProvider with ChangeNotifier {
   int pageIndex = 0;
 
-  final pageViewController = PageController();
+   //PageController pageViewController =   PageController(initialPage:  0);
 
 
   HomeProvider(){
+
+
     AppApis.getSelfInfo();
 
     SystemChannels.lifecycle.setMessageHandler((message) {
@@ -30,17 +32,23 @@ class HomeProvider with ChangeNotifier {
   onPageViewChange(index) {
     pageIndex = index;
 
+    print(" onPageViewChange");
     notifyListeners();
   }
 
   onPageViewSelected(index) {
-    pageViewController.animateToPage(
-      index,
-      duration: Duration(milliseconds: 400),
-      curve: Curves.ease,
-    );
+    print(" onPageViewSelected");
 
-    notifyListeners();
+   pageIndex = index;
+
+   // pageViewController.jumpToPage(index);
+  //   pageViewController.animateToPage(
+  //     index,
+  //     duration: Duration(milliseconds: 500),
+  //     curve: Curves.ease,
+  //   );
+    print(" onPageViewSelected ==3 ");
+    //notifyListeners();
   }
 
 

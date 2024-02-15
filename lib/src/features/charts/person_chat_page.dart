@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
@@ -36,32 +36,25 @@ class PersonChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final chatProvider = Provider.of<PersonChatProvider>(context);
 
     print("person chat screen ");
     //for storing all messages
     List<Message> _list = [];
 
-
     return PopScope(
-      canPop: chatProvider.isPop,
-      onPopInvoked: (didPop){
-
+      canPop: true,
+      onPopInvoked: (didPop) {
         if (chatProvider.showEmoji) {
-         chatProvider.showEmojiPicker();
-         chatProvider.isPop = false;
-
+          chatProvider.showEmojiPicker();
+          chatProvider.isPop = false;
         }
-
-
       },
       child: SafeArea(
         top: false,
         right: false,
         left: false,
         child: Scaffold(
-
             appBar: AppBar(
               automaticallyImplyLeading: false,
               flexibleSpace: Padding(
@@ -86,7 +79,8 @@ class PersonChatPage extends StatelessWidget {
                           children: [
                             IconButton(
                                 onPressed: () {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                                  Navigator.pushReplacement(
+                                      context, MaterialPageRoute(builder: (context) => HomeScreen()));
                                 },
                                 icon: Icon(
                                   Icons.arrow_back,
@@ -120,7 +114,8 @@ class PersonChatPage extends StatelessWidget {
                                   list.isNotEmpty
                                       ? list[0].isOnline
                                           ? 'Online'
-                                          : MyDateUtil.getLastActiveTime(context: context, lastActive: list[0].lastActive)
+                                          : MyDateUtil.getLastActiveTime(
+                                              context: context, lastActive: list[0].lastActive)
                                       : MyDateUtil.getLastActiveTime(context: context, lastActive: user.lastActive),
                                   style: TextStyle(fontSize: 12, color: Colors.green),
                                 )
@@ -150,31 +145,26 @@ class PersonChatPage extends StatelessWidget {
                     child: StreamBuilder(
                         stream: AppApis.getAllMessages(user),
                         builder: (context, snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.waiting:
-                            case ConnectionState.none:
-                              return Container();
-                            case ConnectionState.active:
-                            // TODO: Handle this case.
-                            case ConnectionState.done:
-                              // TODO: Handle this case.
-                              final data = snapshot.data?.docs;
-                              _list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
+                          if (snapshot.hasData) {
+                            final data = snapshot.data?.docs;
+                            _list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
 
-                              if (_list.isNotEmpty) {
-                                return ListView.builder(
-
-                                    reverse: true,
-                                    itemCount: _list.length,
-
-                                    itemBuilder: (context, index) {
-                                      return MessageCard(message: _list[index]);
-                                    });
-                              } else {
-                                return Center(
-                                  child: Text("Say hello "),
-                                );
-                              }
+                            if (_list.isNotEmpty) {
+                              return ListView.builder(
+                                  reverse: true,
+                                  itemCount: _list.length,
+                                  scrollDirection: Axis.vertical,
+                                  physics: BouncingScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return MessageCard(message: _list[index]);
+                                  });
+                            } else {
+                              return Center(
+                                child: Text("Say hello "),
+                              );
+                            }
+                          } else {
+                            return Container();
                           }
                         }),
                   ),
@@ -197,7 +187,6 @@ class PersonChatPage extends StatelessWidget {
                               controller: _textController,
                               onTap: () {
                                 context.read<PersonChatProvider>().showEmojiPicker();
-
                               },
                               textAlignVertical: TextAlignVertical.center,
                               keyboardType: TextInputType.multiline,
@@ -206,7 +195,6 @@ class PersonChatPage extends StatelessWidget {
                               onChanged: (value) {},
                               onTapOutside: (e) {
                                 FocusScope.of(context).unfocus();
-
                               },
                               decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -225,7 +213,8 @@ class PersonChatPage extends StatelessWidget {
                                                     child: Card(
                                                       margin: const EdgeInsets.all(18),
                                                       child: Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                                                         child: Column(
                                                           children: [
                                                             Row(
@@ -381,7 +370,6 @@ class PersonChatPage extends StatelessWidget {
                                     onPressed: () {
                                       context.read<PersonChatProvider>().showEmojiPicker1();
                                       FocusScope.of(context).unfocus();
-
                                     },
                                   )),
                             ),

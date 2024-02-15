@@ -20,96 +20,126 @@ import '../group/group_page.dart';
 import '../settings/Settings.dart';
 import '../status/status_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late PageController pageController;
+
+  int pageIndex = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    pageController = PageController(initialPage: 0);
+
+    AppApis.getSelfInfo();
+
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      print(message);
+
+      if (AppApis.auth.currentUser != null) {
+        if (message.toString().contains('resume')) AppApis.updateActiveStatus(true);
+
+        if (message.toString().contains('pause')) AppApis.updateActiveStatus(false);
+      }
+
+      return Future.value(message);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     print('hello');
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text(
-          "Babble",
-          style: TextStyle(fontSize: 22, color: Colors.green, letterSpacing: 1, fontWeight: FontWeight.bold),
+    return SafeArea(
+      top: false,
+      right: false,
+      left: false,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text(
+            "Babble",
+            style: TextStyle(fontSize: 22, color: Colors.green, letterSpacing: 1, fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.camera_alt_outlined,
+                color: Colors.green,
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.search_outlined,
+                color: Colors.green,
+              ),
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.camera_alt_outlined,
-              color: Colors.green,
+        bottomNavigationBar: GNav(
+          rippleColor: Colors.green[300]!,
+          hoverColor: Colors.green[100]!,
+          gap: 8,
+          activeColor: Colors.green,
+          iconSize: 24,
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          duration: Duration(milliseconds: 400),
+          tabBackgroundColor: Colors.green[50]!,
+          color: Colors.black,
+          tabs: [
+            GButton(
+              icon: LineIcons.rocketChat,
+              text: 'Chats',
             ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.search_outlined,
-              color: Colors.green,
+            GButton(
+              icon: LineIcons.laughingWinkingFace,
+              text: 'Updates',
             ),
-          ),
-        ],
-      ),
-      body: Consumer<HomeProvider>(
-        builder: (BuildContext context, HomeProvider provider, Widget? child) {
-          return PageView(
-              controller: provider.pageViewController,
-              onPageChanged: (index) {
-                provider.pageIndex = index;
-                provider.onPageViewChange(index);
-              },
-              children: [
-                //           // ===========Chats class ===========
-                //
-                AllUserPage(),
-                //           //========Status class=========
-                StatusPage(),
-                CallsPage(),
+            GButton(
+              icon: LineIcons.phone,
+              text: 'Calls',
+            ),
+            GButton(
+              icon: LineIcons.user,
+              text: 'Profile',
+            ),
+          ],
+          selectedIndex: pageIndex,
+          onTabChange: (index) {
 
-                SettingssPage(),
-              ]);
-        },
-      ),
-      bottomNavigationBar: Padding(
-          padding: const EdgeInsets.only(bottom: 50),
-          child: Consumer<HomeProvider>(
-            builder: (context, HomeProvider provider, _) {
-              return GNav(
-                rippleColor: Colors.green[300]!,
-                hoverColor: Colors.green[100]!,
-                gap: 8,
-                activeColor: Colors.green,
-                iconSize: 24,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                duration: Duration(milliseconds: 400),
-                tabBackgroundColor: Colors.green[50]!,
-                color: Colors.black,
-                tabs: [
-                  GButton(
-                    icon: LineIcons.rocketChat,
-                    text: 'Chats',
-                  ),
-                  GButton(
-                    icon: LineIcons.laughingWinkingFace,
-                    text: 'Updates',
-                  ),
-                  GButton(
-                    icon: LineIcons.phone,
-                    text: 'Calls',
-                  ),
-                  GButton(
-                    icon: LineIcons.user,
-                    text: 'Profile',
-                  ),
-                ],
-                selectedIndex: context.watch<HomeProvider>().pageIndex,
-                onTabChange: (index) {
-                  provider.pageIndex = index;
-                  context.read<HomeProvider>().onPageViewSelected(index);
-                },
-              );
+             setState(() {
+             pageController.jumpToPage(index);
+             });
+          },
+        ),
+        body: PageView(
+            scrollDirection: Axis.horizontal,
+            controller: pageController,
+            onPageChanged: (index) {
+              setState(() {
+                pageIndex = index;
+              });
             },
-          )),
+            children: [
+              //           // ===========Chats class ===========
+              //
+              AllUserPage(),
+              //           //========Status class=========
+              StatusPage(),
+              CallsPage(),
+
+              SettingssPage(),
+            ]),
+      ),
     );
   }
 }
