@@ -12,19 +12,20 @@ class _ContectState extends State<Contect> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Select contact",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(fontSize: 20, color: Colors.black87, letterSpacing: 1, ),
             ),
             SizedBox(
               height: 3,
             ),
             Text(
               "150 contact",
-              style: TextStyle(fontSize: 13, color: Colors.white),
+              style: TextStyle(fontSize: 13, color: Colors.green),
             ),
           ],
         ),
@@ -32,9 +33,11 @@ class _ContectState extends State<Contect> {
           const Icon(
             Icons.search_outlined,
             size: 30,
-            color: Colors.white,
+            color: Colors.green,
           ),
           PopupMenuButton(
+
+        iconColor: Colors.green,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               itemBuilder: (BuildContext context) {
@@ -62,7 +65,7 @@ class _ContectState extends State<Contect> {
       body: ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          itemCount: 25,
+          itemCount: 5,
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
               return ListTile(
@@ -78,7 +81,7 @@ class _ContectState extends State<Contect> {
             } else if (index == 1) {
               return ListTile(
                 title: const Text(
-                  "New contect",
+                  "New contact",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 leading: CircleAvatar(
@@ -117,7 +120,7 @@ class _ContectState extends State<Contect> {
               ),
               subtitle: const Text("tag line "),
               title: const Text(
-                "Mansih sahu",
+                "Rahul",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             );

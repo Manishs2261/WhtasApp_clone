@@ -7,6 +7,7 @@ import 'package:whatsappclone/src/core/model/message.dart';
 
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
 import 'package:whatsappclone/src/features/authentication/login_screen/login_screen.dart';
+import 'package:whatsappclone/src/features/chat_bot/chat_bot.dart';
 import 'package:whatsappclone/src/utils/helper/my_date_util.dart';
 
 import '../../core/model/chat_user.dart';
@@ -25,6 +26,7 @@ class AllUserPage extends StatefulWidget {
 class _AllUserPageState extends State<AllUserPage> {
   // for storing all users
   List<ChatUser> _list = [];
+  bool isFabVisible = true;
 
   // for storing searched items
   final List<ChatUser> _searchList = [];
@@ -32,21 +34,57 @@ class _AllUserPageState extends State<AllUserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            // //sign out function
-
-            // await FirebaseAuth.instance.signOut();
-            // await GoogleSignIn().signOut();
-
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
-
-            //  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Contect()));
-          },
-          backgroundColor: const Color(0xff01937c),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(15, 15))),
-          child: const Icon(Icons.message),
-        ),
+        floatingActionButton: isFabVisible
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    height: 35,
+                    width: 35,
+                    child: FloatingActionButton(
+                        heroTag: null,
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ChatBot()));
+                        },
+                        backgroundColor: Colors.green.shade50,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(10, 10))),
+                        child: Text(
+                          "Ai",
+                          style: TextStyle(color: Colors.green, fontSize: 18),
+                        )),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Contect()));
+                    },
+                    backgroundColor: Colors.green.shade200,
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(15, 15))),
+                    child: const Icon(
+                      Icons.messenger_outline,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              )
+            : null,
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () async {
+        //     // //sign out function
+        //
+        //     // await FirebaseAuth.instance.signOut();
+        //     // await GoogleSignIn().signOut();
+        //
+        //  //   Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+        //
+        //       Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Contect()));
+        //   },
+        //   backgroundColor: const Color(0xff01937c),
+        //   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(15, 15))),
+        //   child: const Icon(Icons.message),
+        // ),
         body: StreamBuilder(
           stream: AppApis.getMyUsersId(),
           builder: (context, snapshot) {

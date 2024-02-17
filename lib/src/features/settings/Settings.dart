@@ -1,18 +1,30 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsappclone/src/features/profile/self_profile/self_profile.dart';
 
-class SettingssPage extends StatelessWidget {
+import '../../core/res/apis/apis.dart';
+
+class SettingssPage extends StatefulWidget {
   const SettingssPage({super.key});
+
+  @override
+  State<SettingssPage> createState() => _SettingssPageState();
+}
+
+class _SettingssPageState extends State<SettingssPage> {
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    AppApis.getSelfInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Settings"),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search_outlined))
-        ],
-      ),
+
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -24,13 +36,25 @@ class SettingssPage extends StatelessWidget {
               leading: CircleAvatar(
                 radius: 25,
                 backgroundColor: Colors.blue[100],
-                child: const Icon(Icons.person),
+                child:  ClipRRect(
+                  borderRadius: BorderRadius.circular(360),
+                  clipBehavior: Clip.antiAlias,
+                  child: CachedNetworkImage(
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.fill,
+                    imageUrl: AppApis.me.image,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                ),
               ),
-              title: const Text(
-                "Msnish Sahu",
+              title:  Text(
+                "${AppApis.me.name}",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
               ),
-              subtitle: const Text("I am the Captain of my life"),
+              subtitle:  Text(""
+                  "${AppApis.me.about}"),
               trailing: const Icon(
                 Icons.qr_code,
                 color: Colors.green,

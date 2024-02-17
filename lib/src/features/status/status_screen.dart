@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../../core/res/apis/apis.dart';
+
 class StatusPage extends StatefulWidget {
-   StatusPage({
+  StatusPage({
     super.key,
   });
 
@@ -12,64 +15,68 @@ class StatusPage extends StatefulWidget {
 }
 
 class _StatusPageState extends State<StatusPage> {
+  bool isFabVisible = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    AppApis.getSelfInfo();
+  }
 
 
-  bool isFabVisible =  true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: isFabVisible
-      ? Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          SizedBox(
-            height: 35,
-            width: 35,
-            child: FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Colors.green.shade50,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.elliptical(10, 10))),
-              child: const Icon(
-                Icons.edit,
-                color: Colors.green,
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          FloatingActionButton(
-            onPressed: () {},
-            backgroundColor: const Color(0xff01937c),
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.elliptical(15, 15))),
-            child: const Icon(
-              Icons.camera_alt,
-            ),
-          ),
-        ],
-      )
-      : null,
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  height: 35,
+                  width: 35,
+                  child: FloatingActionButton(
+                    onPressed: () {},
+                    backgroundColor: Colors.green.shade50,
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(10, 10))),
+                    child: const Icon(
+                      Icons.edit,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: const Color(0xff01937c),
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.elliptical(15, 15))),
+                  child: const Icon(
+                    Icons.camera_alt,
+                  ),
+                ),
+              ],
+            )
+          : null,
       body: NotificationListener<UserScrollNotification>(
-        onNotification: (notification){
-
-          if(notification.direction == ScrollDirection.forward){
+        onNotification: (notification) {
+          if (notification.direction == ScrollDirection.forward) {
             setState(() {
               isFabVisible = true;
             });
-          }else  if(notification.direction == ScrollDirection.reverse){
+          } else if (notification.direction == ScrollDirection.reverse) {
             setState(() {
               isFabVisible = false;
             });
           }
 
           return true;
-
         },
         child: ListView.builder(
             padding: EdgeInsets.zero,
-            itemCount: 12,
+            itemCount: 3,
             itemBuilder: (BuildContext context, int index) {
               if (index == 0) {
                 return ListTile(
@@ -81,10 +88,18 @@ class _StatusPageState extends State<StatusPage> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
                             color: Colors.red[100],
-                            border: Border.all(color: Colors.green, width: 3)),
-                        child: const Icon(
-                          Icons.person,
-                          size: 30,
+                            border: Border.all(color: Colors.green, width: 2)),
+                        child:   ClipRRect(
+                          borderRadius: BorderRadius.circular(360),
+                          clipBehavior: Clip.antiAlias,
+                          child: CachedNetworkImage(
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.fill,
+                            imageUrl: AppApis.me.image,
+                            placeholder: (context, url) => CircularProgressIndicator(),
+                            errorWidget: (context, url, error) => Icon(Icons.error),
+                          ),
                         ),
                       ),
                       Positioned(
@@ -119,8 +134,7 @@ class _StatusPageState extends State<StatusPage> {
                 );
               } else if (index == 1) {
                 return const Padding(
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Text(
                     "Recent updates",
                   ),
@@ -144,8 +158,7 @@ class _StatusPageState extends State<StatusPage> {
                 );
               } else if (index == 6) {
                 return const Padding(
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Text("Viewed updates"),
                 );
               } else {

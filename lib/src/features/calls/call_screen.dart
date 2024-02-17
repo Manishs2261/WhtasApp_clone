@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../contacts/contact.dart';
 
 class CallsPage extends StatelessWidget {
-   CallsPage({
+  CallsPage({
     super.key,
   });
 
@@ -23,7 +23,7 @@ class CallsPage extends StatelessWidget {
       ),
       body: ListView.builder(
           padding: EdgeInsets.zero,
-          itemCount: 25,
+          itemCount: 4,
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
               return ListTile(
@@ -49,7 +49,7 @@ class CallsPage extends StatelessWidget {
             } else {
               return ListTile(
                 title: const Text(
-                  "Create call link",
+                  "Rahul",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 subtitle: const Row(
@@ -64,7 +64,7 @@ class CallsPage extends StatelessWidget {
                     Text("Yesterday 3:04 pm"),
                   ],
                 ),
-                leading: CircleAvatar(radius: 25, backgroundColor: Colors.blue[50], child: const Icon(Icons.link)),
+                leading: CircleAvatar(radius: 25, backgroundColor: Colors.blue[50], child: const Icon(Icons.person_2_outlined)),
                 trailing: const Icon(
                   Icons.call,
                   color: Colors.green,
