@@ -115,10 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           selectedIndex: pageIndex,
           onTabChange: (index) {
-
-             setState(() {
-             pageController.jumpToPage(index);
-             });
+            setState(() {
+              pageController.jumpToPage(index);
+            });
           },
         ),
         body: PageView(

@@ -45,7 +45,7 @@ class _ChatBotState extends State<ChatBot> {
                 textAlign: TextAlign.center,
                 onTapOutside: (e) => FocusScope.of(context).unfocus(),
                 decoration: InputDecoration(
-                    fillColor: Colors.green.shade100,
+                    fillColor: Colors.green.shade50,
                     filled: true,
                     isDense: true,
 
@@ -58,10 +58,12 @@ class _ChatBotState extends State<ChatBot> {
               ),
               CircleAvatar(
                 radius: 24,
+                backgroundColor: Colors.teal,
                 child: IconButton(
                   onPressed: controller.askQuestion,
                   icon: Icon(
                     Icons.send,
+                    color: Colors.white,
                     size: 28,
                   ),
                 ),

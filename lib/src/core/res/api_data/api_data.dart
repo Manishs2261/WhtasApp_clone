@@ -20,7 +20,7 @@ class Apis {
           body: jsonEncode({
             "providers": "openai",
             "text": question,
-            "max_tokens": 1000,
+            "max_tokens": 50,
             "temperature": 0,
             "fallback_providers": ""
           }));

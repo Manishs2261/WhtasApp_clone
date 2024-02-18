@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:whatsappclone/src/core/model/message.dart';
 
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
+import 'package:whatsappclone/src/features/all_user_page/widgets/chat_user_card_widgets.dart';
 import 'package:whatsappclone/src/features/authentication/login_screen/login_screen.dart';
 import 'package:whatsappclone/src/features/chat_bot/chat_bot.dart';
 import 'package:whatsappclone/src/utils/helper/my_date_util.dart';
@@ -135,85 +136,5 @@ class _AllUserPageState extends State<AllUserPage> {
             }
           },
         ));
-  }
-}
-
-class ChatUserCardWidgets extends StatefulWidget {
-  ChatUserCardWidgets({super.key, required this.user});
-
-  final ChatUser user;
-
-  @override
-  State<ChatUserCardWidgets> createState() => _ChatUserCardWidgetsState();
-}
-
-class _ChatUserCardWidgetsState extends State<ChatUserCardWidgets> {
-  Message? message;
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: AppApis.getLastMessage(widget.user),
-        builder: (context, snapshort) {
-          final data = snapshort.data?.docs;
-
-          final list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
-          if (list.isNotEmpty) message = list[0];
-
-          return ListTile(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PersonChatPage(
-                          user: widget.user,
-                        )));
-              },
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: CachedNetworkImage(
-                  imageUrl: widget.user.image,
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.person),
-                ),
-              ),
-              title: Text(
-                "${widget.user.name}",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              subtitle: Row(
-                children: [
-                  Icon(
-                    Icons.done_all_outlined,
-                    size: 18,
-                    color: Colors.blue,
-                  ),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Flexible(
-                      child: Text(
-                    message != null
-                        ? message!.type == Type.image
-                            ? 'image'
-                            : message!.msg
-                        : "${widget.user.about}",
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                  ))
-                ],
-              ),
-              trailing: message == null
-                  ? null
-                  : message!.read.isEmpty && message!.fromId != AppApis.user.uid
-                      ? CircleAvatar(
-                          radius: 12,
-                          backgroundColor: Colors.green,
-                          child: Text(
-                            "55",
-                            style: TextStyle(fontSize: 12, color: Colors.white),
-                          ),
-                        )
-                      : Text("${MyDateUtil.getLastMessageTime(context: context, time: message!.sent)}"));
-        });
   }
 }
