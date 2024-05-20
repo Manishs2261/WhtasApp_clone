@@ -8,7 +8,9 @@ class PopupMenuButtonWidgets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return PopupMenuButton(
+        offset: const Offset(0, -580),
         iconColor: Colors.green,
         shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(10)),
         itemBuilder: (BuildContext context) {

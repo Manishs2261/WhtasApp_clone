@@ -1,14 +1,8 @@
-import 'dart:async';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsappclone/src/core/model/chat_user.dart';
 import 'package:whatsappclone/src/core/res/apis/apis.dart';
@@ -16,9 +10,7 @@ import 'package:whatsappclone/src/features/charts/provider/person_chat_provider.
 import 'package:whatsappclone/src/features/charts/widgets/button_sheet_icon.dart';
 import 'package:whatsappclone/src/features/charts/widgets/message_card.dart';
 import 'package:whatsappclone/src/features/charts/widgets/popup_menu_button_widgets.dart';
-
 import 'package:whatsappclone/src/features/profile/profile.dart';
-
 import '../../../main.dart';
 import '../../core/model/message.dart';
 import '../../utils/helper/my_date_util.dart';
